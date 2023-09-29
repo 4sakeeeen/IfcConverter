@@ -1,7 +1,7 @@
 ﻿using IfcConverter.Client.Services;
 using IfcConverter.Domain.Models.Vue;
 using IfcConverter.Domain.Models.Vue.Common.Collections;
-using IfcConverter.Domain.Services;
+using IfcConverter.Domain.Models.Vue.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -353,7 +353,11 @@ namespace IfcConverter.Client.Windows
 
         private void BtnOpenVueFile_Click(object sender, RoutedEventArgs e)
         {
-            VueModel vueModel2 = VueService.ReadVueTextFile("C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\УЗК.txt");
+
+            VueReader vueReader = new("C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\УЗК.txt");
+            VueModel vueModel2 = vueReader.GetModel();
+
+
 
             VueModel? vueModel = JsonSerializer.Deserialize<VueModel>(File.ReadAllText(TbVueFilePath.Text)) ?? throw new Exception("Json did not parsed correctly");
             Elements? geomElements = (vueModel.GraphicElements[0].Geometry?.Elements) ?? throw new Exception("Provided vue geometry elements not set");
