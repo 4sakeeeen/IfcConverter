@@ -5,8 +5,6 @@ VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VueReader.Client", "VueReader.Client\VueReader.Client.csproj", "{F986555F-31F1-4B67-BEB8-AD0D946C7CC9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{16974F2D-A157-4B81-9C57-8F39AA5F249A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VueReader.Domain", "VueReader.Domain\VueReader.Domain.csproj", "{73B34795-0A61-47CA-9DAE-FD151CC01676}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{F986555F-31F1-4B67-BEB8-AD0D946C7CC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F986555F-31F1-4B67-BEB8-AD0D946C7CC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F986555F-31F1-4B67-BEB8-AD0D946C7CC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16974F2D-A157-4B81-9C57-8F39AA5F249A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16974F2D-A157-4B81-9C57-8F39AA5F249A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16974F2D-A157-4B81-9C57-8F39AA5F249A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16974F2D-A157-4B81-9C57-8F39AA5F249A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{73B34795-0A61-47CA-9DAE-FD151CC01676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{73B34795-0A61-47CA-9DAE-FD151CC01676}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73B34795-0A61-47CA-9DAE-FD151CC01676}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Windows.Documents;
 using VueReader.Domain.Models.Vue;
 
 namespace VueReader.Domain.Services
@@ -26,6 +22,18 @@ namespace VueReader.Domain.Services
             }
         }
 
+        private static LineDefinition _LineDefinition = LineDefinition.UNDEFINDED;
+
+        public static LineDefinition LineDefinition
+        {
+            get { return _LineDefinition; }
+            set
+            {
+                if (_LineDefinition == value) { throw new Exception($"Try to set line definition state to same value '{value}'"); }
+                _LineDefinition = value;
+            }
+        }
+
 
         public static VueModel ReadVueTextFile(string path)
         {
@@ -34,31 +42,26 @@ namespace VueReader.Domain.Services
             string? line = null;
             GraphicElement? graphicElement = null;
 
-            LineDefinition lineDef = LineDefinition.UNDEFINDED;
-            
 
             Action<string> actualizeStatuses = (l) =>
             {
                 if (l.StartsWith(new string('*', 39) + " GRAPHIC : "))
                 {
-                    if (lineDef == LineDefinition.MARKER) { throw new Exception(); }
-                    lineDef = LineDefinition.MARKER;         
+                    LineDefinition = LineDefinition.MARKER;         
                     ElementReadingStatus = ElementReadingStatus.READING;
                     return;
                 }
                 
                 if (l == new string('*', 39) + " COMPLETED " + new string('*', 39))
                 {
-                    if (lineDef == LineDefinition.MARKER) { throw new Exception(); }
-                    lineDef = LineDefinition.MARKER;
+                    LineDefinition = LineDefinition.MARKER;
                     ElementReadingStatus = ElementReadingStatus.COMPLETED;
                     return;
                 }
 
                 if (l == "Label properties { " && ElementReadingStatus == ElementReadingStatus.READING)
                 {
-                    if (lineDef == LineDefinition.MARKER) { throw new Exception(); }
-                    lineDef = LineDefinition.MARKER;
+                    LineDefinition = LineDefinition.MARKER;
 
                     ElementReadingStatus = ElementReadingStatus.READING_PROPERTIES;
                     return;
@@ -66,8 +69,7 @@ namespace VueReader.Domain.Services
 
                 if (l == "}" && ElementReadingStatus == ElementReadingStatus.READING_PROPERTIES)
                 {
-                    if (lineDef == LineDefinition.MARKER) { throw new Exception(); }
-                    lineDef = LineDefinition.MARKER;
+                    LineDefinition = LineDefinition.MARKER;
 
                     ElementReadingStatus = ElementReadingStatus.READING;
                     return;
@@ -77,12 +79,12 @@ namespace VueReader.Domain.Services
                 if (ElementReadingStatus == ElementReadingStatus.COMPLETED)
                 {
                     ElementReadingStatus = ElementReadingStatus.NOT_READING;
-                    lineDef = LineDefinition.UNDEFINDED;
+                    LineDefinition = LineDefinition.UNDEFINDED;
                 }
 
                 if (ElementReadingStatus == ElementReadingStatus.READING)
                 {
-                    lineDef = LineDefinition.DATA;
+                    LineDefinition = LineDefinition.DATA;
                 }
             };
 
