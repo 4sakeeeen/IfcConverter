@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VueReader.Client", "VueReader.Client\VueReader.Client.csproj", "{F986555F-31F1-4B67-BEB8-AD0D946C7CC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IfcConverter.Client", "VueReader.Client\IfcConverter.Client.csproj", "{F986555F-31F1-4B67-BEB8-AD0D946C7CC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VueReader.Domain", "VueReader.Domain\VueReader.Domain.csproj", "{73B34795-0A61-47CA-9DAE-FD151CC01676}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IfcConverter.Domain", "VueReader.Domain\IfcConverter.Domain.csproj", "{73B34795-0A61-47CA-9DAE-FD151CC01676}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

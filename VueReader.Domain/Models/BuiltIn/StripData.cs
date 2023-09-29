@@ -1,4 +1,4 @@
-﻿namespace VueReader.Domain.Models.BuiltIn
+﻿namespace IfcConverter.Domain.Models.BuiltIn
 {
     /// <summary>
     /// The StripData structure represents the format of the tessellated data that can be linear or surface data.The mType parameter represents the type of data this structure contains. For

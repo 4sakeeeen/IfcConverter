@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using VueReader.Domain.Models.Vue.Common;
-using VueReader.Domain.Models.Vue.Common.Collections;
+using IfcConverter.Domain.Models.Vue.Common;
+using IfcConverter.Domain.Models.Vue.Common.Collections;
 
-namespace VueReader.Domain.Models.Vue.Geometries
+namespace IfcConverter.Domain.Models.Vue.Geometries
 {
     public class Plane
     {

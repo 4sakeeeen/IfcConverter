@@ -1,4 +1,4 @@
-﻿namespace VueReader.Domain.Models.BuiltIn
+﻿namespace IfcConverter.Domain.Models.BuiltIn
 {
     /// <summary>
     /// The SourceFileInfo structure represents the input vue/zvf files source information.

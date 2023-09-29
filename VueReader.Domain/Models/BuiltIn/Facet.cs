@@ -1,4 +1,4 @@
-﻿namespace VueReader.Domain.Models.BuiltIn
+﻿namespace IfcConverter.Domain.Models.BuiltIn
 {
     /// <summary>
     /// The Facet structure contains Face index for a triangle face (m_i4 = 0) or a quad. This structure contains information about the POLYMESH_TYPE faces.

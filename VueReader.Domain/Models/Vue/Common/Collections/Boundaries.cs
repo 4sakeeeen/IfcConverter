@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
-using VueReader.Domain.Models.Vue.Geometries;
+using IfcConverter.Domain.Models.Vue.Geometries;
 
-namespace VueReader.Domain.Models.Vue.Common.Collections
+namespace IfcConverter.Domain.Models.Vue.Common.Collections
 {
     public class Boundaries
     {

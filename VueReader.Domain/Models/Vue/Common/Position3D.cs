@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace VueReader.Domain.Models.Vue.Common
+namespace IfcConverter.Domain.Models.Vue.Common
 {
     public sealed class Position3D
     {

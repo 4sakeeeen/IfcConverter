@@ -1,4 +1,4 @@
-﻿namespace VueReader.Domain.Models.BuiltIn
+﻿namespace IfcConverter.Domain.Models.BuiltIn
 {
     /// <summary>
     /// The Position structure contains three double values. This structure represents the vertex data position and other 3D data.

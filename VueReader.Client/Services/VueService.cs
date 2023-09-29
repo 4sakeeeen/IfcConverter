@@ -1,115 +1,198 @@
 ﻿using System;
 using System.IO;
-using VueReader.Domain.Models.Vue;
+using IfcConverter.Domain.Models.Vue;
+using IfcConverter.Domain.Models.Vue.Services;
 
-namespace VueReader.Domain.Services
+namespace IfcConverter.Domain.Services
 {
-    public enum ElementReadingStatus
+    /// <summary>
+    /// Types of a line string of a vue text file.
+    /// </summary>
+    public enum LineType
     { 
+        /// <summary>
+        /// Redudant data that's shall not be used.
+        /// </summary>
+        UNDEFINDED,
+        /// <summary>
+        ///  Represented as vue useful data.
+        /// </summary>
+        DATA,
+        /// <summary>
+        /// Represented as the marker that's mean internal data used to business logic.
+        /// </summary>
+        MARKER
+    }
+
+
+    /// <summary>
+    /// Graphic element reading states.
+    /// </summary>
+    public enum ElementReadingStates
+    {
+        /// <summary>
+        /// Reading data that's not mentioned to a graphic element.
+        /// </summary>
         NOT_READING,
+        /// <summary>
+        /// Reading data that's mentioned to a graphic element.
+        /// </summary>
         READING,
+        /// <summary>
+        /// Reading data that's mentioned to a graphic element as element's label properties.
+        /// </summary>
         READING_PROPERTIES,
+        /// <summary>
+        /// Reading data that's mentioned to a graphic element as element's geometries.
+        /// </summary>
         READING_GEOMETRY,
+        /// <summary>
+        /// A graphic element was created recently.
+        /// </summary>
         CREATED,
+        /// <summary>
+        /// Reading of a graphic element was finished recently.
+        /// </summary>
         COMPLETED
     }
-    public enum LineDefinition
-    { 
-        UNDEFINDED,
-        DATA,
-        MARKER
+
+
+    /// <summary>
+    /// Geometry group reading states.
+    /// </summary>
+    public enum GeometryReadingStates
+    {
+        /// <summary>
+        /// Reading data that's not mentioned to a graphic element's geometry.
+        /// </summary>
+        NOT_READING,
+        /// <summary>
+        /// Reading data that's mentioned to a graphic element's geometry.
+        /// </summary>
+        READING,
+        READING_STARTED,
+        READING_ENDED
     }
 
 
     public static class VueService
     {
-        private static ElementReadingStatus _ElementReadingStatus = ElementReadingStatus.NOT_READING;
+        private static LineType _LineType = LineType.UNDEFINDED;
 
-        public static ElementReadingStatus ElementReadingStatus
+        public static LineType LineType
         {
-            get { return _ElementReadingStatus; }
+            get { return _LineType; }
             set
             {
-                if (_ElementReadingStatus == value) { throw new Exception($"Try to set element reading status to same value '{value}'"); }
-                _ElementReadingStatus = value;
-
-                int i = 10;
-                i = 10; // для нас не ок(
+                if (value != LineType.DATA && GeometryReadingState != GeometryReadingStates.NOT_READING && _LineType == value) { throw new Exception($"Try to set line definition state to same value '{value}'"); }
+                _LineType = value;
             }
         }
 
-        private static LineDefinition _LineDefinition = LineDefinition.UNDEFINDED;
 
-        public static LineDefinition LineDefinition
+        private static ElementReadingStates _ElementReadingState = ElementReadingStates.NOT_READING;
+
+        public static ElementReadingStates ElementReadingState
         {
-            get { return _LineDefinition; }
+            get { return _ElementReadingState; }
             set
             {
-                if (value != LineDefinition.DATA && _LineDefinition == value) { throw new Exception($"Try to set line definition state to same value '{value}'"); }
-                _LineDefinition = value;
+                if (_ElementReadingState == value) { throw new Exception($"Try to set element reading status to same value '{value}'"); }
+                _ElementReadingState = value;
+            }
+        }
+
+
+        private static GeometryReadingStates _GeometryReadingState = GeometryReadingStates.NOT_READING;
+
+        public static GeometryReadingStates GeometryReadingState
+        {
+            get { return _GeometryReadingState; }
+            set
+            {
+                if (_GeometryReadingState == value) { throw new Exception($"Try to set geometry reading status to same value '{value}'"); }
+                _GeometryReadingState = value;
             }
         }
 
 
         public static VueModel ReadVueTextFile(string path)
         {
+            VueReader vueReader = new();
+
             VueModel model = new();
             using StreamReader reader = new(path);
             string? line = null;
             GraphicElement? graphicElement = null;
+            GeometryGroup? geometryGroup = null;
+
 
             Action<string> actualizeStatuses = (l) =>
             {
                 if (l.StartsWith(new string('*', 39) + " GRAPHIC : "))
                 {
-                    LineDefinition = LineDefinition.MARKER;         
-                    ElementReadingStatus = ElementReadingStatus.CREATED;
+                    LineType = LineType.MARKER;         
+                    ElementReadingState = ElementReadingStates.CREATED;
                     return;
                 }
                 
                 if (l == new string('*', 39) + " COMPLETED " + new string('*', 39))
                 {
-                    LineDefinition = LineDefinition.MARKER;
-                    ElementReadingStatus = ElementReadingStatus.COMPLETED;
+                    LineType = LineType.MARKER;
+                    ElementReadingState = ElementReadingStates.COMPLETED;
                     return;
                 }
 
-                if (l == "Label properties { " && ElementReadingStatus == ElementReadingStatus.READING)
+                if (l == "Label properties { " && ElementReadingState == ElementReadingStates.READING)
                 {
-                    LineDefinition = LineDefinition.MARKER;
-                    ElementReadingStatus = ElementReadingStatus.READING_PROPERTIES;
+                    LineType = LineType.MARKER;
+                    ElementReadingState = ElementReadingStates.READING_PROPERTIES;
                     return;
                 }
 
-                if (l == "}" && ElementReadingStatus == ElementReadingStatus.READING_PROPERTIES)
+                if (l == "}" && ElementReadingState == ElementReadingStates.READING_PROPERTIES)
                 {
-                    LineDefinition = LineDefinition.MARKER;
-                    ElementReadingStatus = ElementReadingStatus.READING;
+                    LineType = LineType.MARKER;
+                    ElementReadingState = ElementReadingStates.READING;
+                    return;
+                }
+
+                if (l == "GROUP_TYPE" && ElementReadingState == ElementReadingStates.READING)
+                {
+                    LineType = LineType.MARKER;
+                    ElementReadingState = ElementReadingStates.READING_GEOMETRY;
+                    GeometryReadingState = GeometryReadingStates.READING_STARTED;
+                    return;
+                }
+
+                if (l == "GROUP_END" && ElementReadingState == ElementReadingStates.READING_GEOMETRY)
+                {
+                    LineType = LineType.MARKER;
+                    ElementReadingState = ElementReadingStates.READING;
+                    GeometryReadingState = GeometryReadingStates.READING_ENDED;
                     return;
                 }
 
                 // ТОЧНО НЕ МАРКЕР
-                if (ElementReadingStatus == ElementReadingStatus.CREATED)
-                {
-                    ElementReadingStatus = ElementReadingStatus.READING;
-                }
 
-                if (ElementReadingStatus == ElementReadingStatus.COMPLETED)
-                {
-                    ElementReadingStatus = ElementReadingStatus.NOT_READING;
-                }
+                // переключаем, т.к.CREATED - всего одна строчка
+                if (ElementReadingState == ElementReadingStates.CREATED) { ElementReadingState = ElementReadingStates.READING; }
 
-                if (ElementReadingStatus == ElementReadingStatus.READING_PROPERTIES)
-                {
-                    LineDefinition = LineDefinition.DATA;
-                }
+                // переключаем, т.к. COMPLETED - всего одна строчка
+                if (ElementReadingState == ElementReadingStates.COMPLETED) { ElementReadingState = ElementReadingStates.NOT_READING; }
+
+                // переключаем, т.к. READING_STARTED - всего одна строчка
+                if (GeometryReadingState == GeometryReadingStates.READING_STARTED) { GeometryReadingState = GeometryReadingStates.READING; }
+
+                // переключаем, т.к. READING_ENDED - всего одна строчка
+                if (GeometryReadingState == GeometryReadingStates.READING_ENDED) { GeometryReadingState = GeometryReadingStates.NOT_READING; }
+
+                // Какие данные считаются нужными для парсинга
+                if (ElementReadingState == ElementReadingStates.READING_PROPERTIES) { LineType = LineType.DATA; }
 
                 // в течении всей фукнкции не переключился LineDefinition,
                 // и Denifnition - точно не MARKER. По этому переключаем на неизвестный
-                if (LineDefinition == LineDefinition.MARKER)
-                {
-                    LineDefinition = LineDefinition.UNDEFINDED;
-                }
+                if (LineType == LineType.MARKER) { LineType = LineType.UNDEFINDED; }
             };
 
             while ((line = reader.ReadLine()) != null)
@@ -123,23 +206,36 @@ namespace VueReader.Domain.Services
                     throw new Exception("", e);
                 }
 
-                if (LineDefinition == LineDefinition.MARKER)
+                if (LineType == LineType.MARKER)
                 {
-                    switch (ElementReadingStatus)
+                    switch (ElementReadingState)
                     {
-                        case ElementReadingStatus.CREATED:
+                        case ElementReadingStates.CREATED:
                             graphicElement = new GraphicElement();
                             break;
 
-                        case ElementReadingStatus.COMPLETED:
+                        case ElementReadingStates.COMPLETED:
                             if (graphicElement == null) { throw new Exception("Graphic element ending excepted but instance not created"); }
                             model.GraphicElements.Add(graphicElement);
                             graphicElement = null;
                             break;
                     }
+
+                    switch (GeometryReadingState)
+                    {
+                        case GeometryReadingStates.READING_STARTED:
+                            geometryGroup = new GeometryGroup();
+                            break;
+
+                        case GeometryReadingStates.READING_ENDED:
+                            if (graphicElement == null) { throw new Exception("Graphic element's geometry ending excepted but instance not created"); }
+                            graphicElement.Geometry = geometryGroup;
+                            geometryGroup = null;
+                            break;
+                    }
                 }
 
-                if (LineDefinition == LineDefinition.DATA && ElementReadingStatus == ElementReadingStatus.READING_PROPERTIES)
+                if (LineType == LineType.DATA && ElementReadingState == ElementReadingStates.READING_PROPERTIES)
                 {
                     if (graphicElement == null) { throw new Exception("Property excepted but instance not created"); }
                     string[] propValues = line.Split(" : ");

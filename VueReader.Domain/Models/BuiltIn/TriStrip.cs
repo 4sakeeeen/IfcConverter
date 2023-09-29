@@ -1,4 +1,4 @@
-﻿namespace VueReader.Domain.Models.BuiltIn
+﻿namespace IfcConverter.Domain.Models.BuiltIn
 {
     /// <summary>
     /// The TriStrip structure contains triangle strip data information. The m_iVertexCount parameter represents the vertex count.The vertex data is represented by m_pVertex.

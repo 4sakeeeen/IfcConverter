@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
-using VueReader.Domain.Models.Vue.Common.Collections;
+using IfcConverter.Domain.Models.Vue.Common.Collections;
 
-namespace VueReader.Domain.Models.Vue
+namespace IfcConverter.Domain.Models.Vue
 {
     public class GeometryGroup
     {

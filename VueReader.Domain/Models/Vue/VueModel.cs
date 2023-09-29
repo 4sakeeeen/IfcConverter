@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace VueReader.Domain.Models.Vue
+namespace IfcConverter.Domain.Models.Vue
 {
     public class VueModel
     {

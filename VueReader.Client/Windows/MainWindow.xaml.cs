@@ -1,15 +1,14 @@
-﻿using System;
+﻿using IfcConverter.Client.Services;
+using IfcConverter.Domain.Models.Vue;
+using IfcConverter.Domain.Models.Vue.Common.Collections;
+using IfcConverter.Domain.Services;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows;
-using VueReader.Client.Services;
-using VueReader.Domain.Models.Vue;
-using VueReader.Domain.Models.Vue.Common.Collections;
-using VueReader.Domain.Services;
 using Xbim.Common;
-using Xbim.Common.Step21;
 using Xbim.Ifc;
 using Xbim.Ifc4.GeometricConstraintResource;
 using Xbim.Ifc4.GeometricModelResource;
@@ -27,7 +26,7 @@ using Xbim.Ifc4.RepresentationResource;
 using Xbim.Ifc4.SharedBldgElements;
 using Xbim.IO;
 
-namespace VueReader.Client.Windows
+namespace IfcConverter.Client.Windows
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
-using VueReader.Domain.Models.Vue.Common;
+using IfcConverter.Domain.Models.Vue.Common;
 
-namespace VueReader.Domain.Models.Vue.Geometries
+namespace IfcConverter.Domain.Models.Vue.Geometries
 {
     public class Line
     {

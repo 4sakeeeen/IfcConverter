@@ -1,4 +1,4 @@
-﻿namespace VueReader.Domain.Models.BuiltIn
+﻿namespace IfcConverter.Domain.Models.BuiltIn
 {
     /// <summary>
     /// The LineStrip structure represents the linear strip data for curves. The m_iVertexCount parameter represents the count of vertices.The m_pVertexIndex parameter is the index array

@@ -1,11 +1,9 @@
-﻿using System;
+﻿using IfcConverter.Domain.Models.Vue.Common.Collections;
+using System;
 using System.Linq;
-using System.Windows.Data;
-using VueReader.Domain.Models.Vue.Common.Collections;
 using Xbim.Common;
 using Xbim.Common.Step21;
 using Xbim.Ifc;
-using Xbim.Ifc2x3.FacilitiesMgmtDomain;
 using Xbim.Ifc4.GeometricConstraintResource;
 using Xbim.Ifc4.GeometricModelResource;
 using Xbim.Ifc4.GeometryResource;
@@ -17,7 +15,7 @@ using Xbim.Ifc4.SharedBldgElements;
 using Xbim.Ifc4.TopologyResource;
 using Xbim.IO;
 
-namespace VueReader.Client.Services
+namespace IfcConverter.Client.Services
 {
     public static class IfcService
     {

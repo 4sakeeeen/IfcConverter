@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VueReader.Domain\VueReader.Domain.csproj" />
+    <ProjectReference Include="..\VueReader.Domain\IfcConverter.Domain.csproj" />
   </ItemGroup>
 
 </Project>
