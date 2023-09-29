@@ -4,8 +4,21 @@ using VueReader.Domain.Models.Vue;
 
 namespace VueReader.Domain.Services
 {
-    public enum ElementReadingStatus { NOT_READING, READING, READING_PROPERTIES, READING_GEOMETRY, COMPLETED }
-    public enum LineDefinition { UNDEFINDED, DATA, MARKER }
+    public enum ElementReadingStatus
+    { 
+        NOT_READING,
+        READING,
+        READING_PROPERTIES,
+        READING_GEOMETRY,
+        CREATED,
+        COMPLETED
+    }
+    public enum LineDefinition
+    { 
+        UNDEFINDED,
+        DATA,
+        MARKER
+    }
 
 
     public static class VueService
@@ -19,6 +32,9 @@ namespace VueReader.Domain.Services
             {
                 if (_ElementReadingStatus == value) { throw new Exception($"Try to set element reading status to same value '{value}'"); }
                 _ElementReadingStatus = value;
+
+                int i = 10;
+                i = 10; // для нас не ок(
             }
         }
 
@@ -29,7 +45,7 @@ namespace VueReader.Domain.Services
             get { return _LineDefinition; }
             set
             {
-                if (_LineDefinition == value) { throw new Exception($"Try to set line definition state to same value '{value}'"); }
+                if (value != LineDefinition.DATA && _LineDefinition == value) { throw new Exception($"Try to set line definition state to same value '{value}'"); }
                 _LineDefinition = value;
             }
         }
@@ -42,13 +58,12 @@ namespace VueReader.Domain.Services
             string? line = null;
             GraphicElement? graphicElement = null;
 
-
             Action<string> actualizeStatuses = (l) =>
             {
                 if (l.StartsWith(new string('*', 39) + " GRAPHIC : "))
                 {
                     LineDefinition = LineDefinition.MARKER;         
-                    ElementReadingStatus = ElementReadingStatus.READING;
+                    ElementReadingStatus = ElementReadingStatus.CREATED;
                     return;
                 }
                 
@@ -62,7 +77,6 @@ namespace VueReader.Domain.Services
                 if (l == "Label properties { " && ElementReadingStatus == ElementReadingStatus.READING)
                 {
                     LineDefinition = LineDefinition.MARKER;
-
                     ElementReadingStatus = ElementReadingStatus.READING_PROPERTIES;
                     return;
                 }
@@ -70,33 +84,50 @@ namespace VueReader.Domain.Services
                 if (l == "}" && ElementReadingStatus == ElementReadingStatus.READING_PROPERTIES)
                 {
                     LineDefinition = LineDefinition.MARKER;
-
                     ElementReadingStatus = ElementReadingStatus.READING;
                     return;
                 }
 
-                // тут НЕ маркеры
+                // ТОЧНО НЕ МАРКЕР
+                if (ElementReadingStatus == ElementReadingStatus.CREATED)
+                {
+                    ElementReadingStatus = ElementReadingStatus.READING;
+                }
+
                 if (ElementReadingStatus == ElementReadingStatus.COMPLETED)
                 {
                     ElementReadingStatus = ElementReadingStatus.NOT_READING;
-                    LineDefinition = LineDefinition.UNDEFINDED;
                 }
 
-                if (ElementReadingStatus == ElementReadingStatus.READING)
+                if (ElementReadingStatus == ElementReadingStatus.READING_PROPERTIES)
                 {
                     LineDefinition = LineDefinition.DATA;
+                }
+
+                // в течении всей фукнкции не переключился LineDefinition,
+                // и Denifnition - точно не MARKER. По этому переключаем на неизвестный
+                if (LineDefinition == LineDefinition.MARKER)
+                {
+                    LineDefinition = LineDefinition.UNDEFINDED;
                 }
             };
 
             while ((line = reader.ReadLine()) != null)
             {
-                actualizeStatuses(line);
+                try
+                {
+                    actualizeStatuses(line);
+                }
+                catch(Exception e)
+                {
+                    throw new Exception("", e);
+                }
 
-                if (lineDef == LineDefinition.MARKER)
+                if (LineDefinition == LineDefinition.MARKER)
                 {
                     switch (ElementReadingStatus)
                     {
-                        case ElementReadingStatus.READING:
+                        case ElementReadingStatus.CREATED:
                             graphicElement = new GraphicElement();
                             break;
 
@@ -106,6 +137,13 @@ namespace VueReader.Domain.Services
                             graphicElement = null;
                             break;
                     }
+                }
+
+                if (LineDefinition == LineDefinition.DATA && ElementReadingStatus == ElementReadingStatus.READING_PROPERTIES)
+                {
+                    if (graphicElement == null) { throw new Exception("Property excepted but instance not created"); }
+                    string[] propValues = line.Split(" : ");
+                    graphicElement.LabelProperties.Add(propValues[0], propValues[1]);
                 }
             }
 
