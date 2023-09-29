@@ -4,6 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows;
+using VueReader.Client.Services;
+using VueReader.Domain.Models.Vue;
+using VueReader.Domain.Models.Vue.Common.Collections;
+using VueReader.Domain.Services;
 using Xbim.Common;
 using Xbim.Common.Step21;
 using Xbim.Ifc;
@@ -23,7 +27,7 @@ using Xbim.Ifc4.RepresentationResource;
 using Xbim.Ifc4.SharedBldgElements;
 using Xbim.IO;
 
-namespace VueReader.Client
+namespace VueReader.Client.Windows
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -33,42 +37,6 @@ namespace VueReader.Client
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private IfcStore CreateAndInitModel(string projectName)
-        {
-            XbimEditorCredentials credentials = new();
-            var model = IfcStore.Create(credentials, XbimSchemaVersion.Ifc4, XbimStoreType.InMemoryModel);
-
-            using ITransaction transaction = model.BeginTransaction("Initialise Model");
-            IfcProject project = model.Instances.New<IfcProject>();
-            project.Initialize(ProjectUnits.SIUnitsUK);
-            project.Name = projectName;
-            transaction.Commit();
-
-            return model;
-        }
-
-        private IfcBuilding CreateBuilding(IfcStore model, string name)
-        {
-            using ITransaction transaction = model.BeginTransaction("Create Building");
-            IfcBuilding building = model.Instances.New<IfcBuilding>();
-            building.Name = name;
-            building.CompositionType = IfcElementCompositionEnum.ELEMENT;
-
-            IfcAxis2Placement3D placement = model.Instances.New<IfcAxis2Placement3D>();
-            placement.Location = model.Instances.New<IfcCartesianPoint>(p => p.SetXYZ(0, 0, 0));
-
-            IfcLocalPlacement localPlacement = model.Instances.New<IfcLocalPlacement>();
-            localPlacement.RelativePlacement = placement;
-
-            building.ObjectPlacement = localPlacement;
-
-            IfcProject? project = model.Instances.OfType<IfcProject>().FirstOrDefault();
-            project?.AddBuilding(building);
-            transaction.Commit();
-
-            return building;
         }
 
         private IfcWallStandardCase CreateWall(IfcStore model, double length, double width, double height)
@@ -386,39 +354,20 @@ namespace VueReader.Client
 
         private void BtnOpenVueFile_Click(object sender, RoutedEventArgs e)
         {
+            VueModel vueModel2 = VueService.ReadVueTextFile("C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\УЗК.txt");
+
             VueModel? vueModel = JsonSerializer.Deserialize<VueModel>(File.ReadAllText(TbVueFilePath.Text)) ?? throw new Exception("Json did not parsed correctly");
             Elements? geomElements = (vueModel.GraphicElements[0].Geometry?.Elements) ?? throw new Exception("Provided vue geometry elements not set");
-            using IfcStore ifcModel = CreateAndInitModel("Default Project #1") ?? throw new Exception("Model is null");
-            IfcServices ifcService = new(ifcModel);
-            IfcBuilding building = CreateBuilding(ifcModel, "Default Building #1");
+            
+            using IfcStore ifcModel = IfcService.CreateAndInitModel("УЗК") ?? throw new Exception("Model is null");
+            IfcBuilding building = IfcService.CreateBuilding(ifcModel, "A Building");
+            IfcService.CreateProduct(ifcModel, building, geomElements);
 
-            using ITransaction transaction = ifcModel.BeginTransaction();
-
-            // создаём объект как Member
-            var member = ifcModel.Instances.New<IfcMember>();
-            member.Name = "A Member";
-            member.Description = "Out first member with representations";
-            member.Representation = ifcModel.Instances.New<IfcProductDefinitionShape>();
-            member.Representation.Representations.Add(
-                ifcService.CreateShapeRepresentation(geomElements));
-            member.ObjectPlacement = ifcModel.Instances.New<IfcLocalPlacement>(placement =>
-            {
-                placement.RelativePlacement = ifcModel.Instances.New<IfcAxis2Placement3D>(axis3d =>
-                {
-                    axis3d.Location = ifcModel.Instances.New<IfcCartesianPoint>(point => point.SetXYZ(0, 0, 0));
-                    axis3d.RefDirection = ifcModel.Instances.New<IfcDirection>(dir => dir.SetXYZ(0, 1, 0));
-                    axis3d.Axis = ifcModel.Instances.New<IfcDirection>(dir => dir.SetXYZ(0, 0, 1));
-                });
-            });
-            building.AddElement(member);
-
-            transaction.Commit();
-
-            ifcModel.SaveAs("HelloWallIfc4.ifc", StorageType.Ifc);
+            ifcModel.SaveAs("C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\TestEnv.ifc", StorageType.Ifc);
 
             string jsonData = JsonSerializer.Serialize(vueModel, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(TbVueFilePath.Text, jsonData);
-            
+            MessageBox.Show("Model was created");
         }
     }
 }

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xbim.Geometry" Version="5.1.437" />
+    <PackageReference Include="Xbim.Essentials" Version="5.1.341" />
   </ItemGroup>
 
   <ItemGroup>
