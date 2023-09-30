@@ -14,6 +14,7 @@
         /// </summary>
         READING,
         READING_STARTED,
-        READING_ENDED
+        READING_ENDED,
+        READING_PROPERTIES
     }
 }

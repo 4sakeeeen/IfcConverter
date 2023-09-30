@@ -1,4 +1,5 @@
 ﻿using IfcConverter.Domain.Models.Vue.Services.Common;
+using System.Text.RegularExpressions;
 
 namespace IfcConverter.Domain.Models.Vue.Services
 {
@@ -9,24 +10,54 @@ namespace IfcConverter.Domain.Models.Vue.Services
         private string? _CurrentLine = null;
 
 
-        private LineType _LineType = LineType.UNDEFINDED;
-
         public LineType LineType
         {
-            get { return _LineType; }
-            set
+            get
             {
-                if (value != LineType.DATA && GeometryReadingState != GeometryReadingStates.NOT_READING && _LineType == value) { throw new Exception($"Try to set line definition state to same value '{value}'"); }
-                _LineType = value;
+                string[] markerRexPatterns =
+                {
+                    "\\*{39} GRAPHIC : \\d+ INFO \\*{30}",
+                    "Label properties { ",
+                    "{",
+                    "}",
+                    "GROUP_TYPE",
+                    "GROUP_START",
+                    "GROUP_END"
+                };
+
+                if (_CurrentLine == null) { return LineType.UNDEFINDED; }
+                if (markerRexPatterns.Any(pattern => Regex.IsMatch(_CurrentLine, pattern)))
+                {
+                    return LineType.MARKER;
+                }
+                else
+                {
+                    // Как решить: DATA или UNDEFINDED?
+                    if (
+                        ElementReadingState == ElementReadingStates.READING_PROPERTIES
+                        || GeometryReadingState == GeometryReadingStates.READING_PROPERTIES && _CurrentLine != "{"
+                    )
+                    {
+                        return LineType.DATA;
+                    }
+                    else
+                    {
+                        return LineType.UNDEFINDED;
+                    }
+                }
             }
         }
 
 
-        private ElementReadingStates _ElementReadingState = ElementReadingStates.NOT_READING;
-
         public ElementReadingStates ElementReadingState
         {
-            get { return _ElementReadingState; }
+            get
+            {
+                if (_CurrentLine == null) { return ElementReadingStates.NOT_READING; }
+                if (Regex.IsMatch(_CurrentLine, "\\*{39} GRAPHIC : \\d+ INFO \\*{30}")) { return ElementReadingStates.CREATED; }
+                if (Regex.IsMatch(_CurrentLine, "\\*{39} COMPLETED \\*{39}")) { return ElementReadingStates.COMPLETED; }
+                if (_CurrentLine == "Label properties { ") { return ElementReadingStates.READING_PROPERTIES; }
+            }
             set
             {
                 if (_ElementReadingState == value) { throw new Exception($"Try to set element reading status to same value '{value}'"); }
@@ -49,6 +80,7 @@ namespace IfcConverter.Domain.Models.Vue.Services
 
 
         public VueReader(string filePath) { _FilePath = filePath; }
+
 
         public VueModel GetModel()
         {
@@ -99,52 +131,40 @@ namespace IfcConverter.Domain.Models.Vue.Services
                     }
                 }
 
-                if (LineType == LineType.DATA && ElementReadingState == ElementReadingStates.READING_PROPERTIES)
+                if (LineType == LineType.DATA)
                 {
-                    if (currentGraphicElement == null) { throw new Exception("Property excepted but instance not created"); }
-                    string[] propValues = line.Split(" : ");
-                    currentGraphicElement.LabelProperties.Add(propValues[0], propValues[1]);
+                    if (ElementReadingState == ElementReadingStates.READING_PROPERTIES)
+                    {
+                        if (currentGraphicElement == null) { throw new Exception("Property excepted but instance not created"); }
+                        string[] propValues = _CurrentLine.Split(" : ");
+                        currentGraphicElement.LabelProperties.Add(propValues[0], propValues[1]);
+                    }
+
+                    if (GeometryReadingState == GeometryReadingStates.READING_PROPERTIES)
+                    {
+                        var f = _CurrentLine;
+                    }
                 }
             }
 
             return model;
         }
     
+
         private void ActualizeStatuses()
         {
             if (_CurrentLine == null) { throw new Exception("Actualizing reader states was failed. Reader's current line is null."); }
 
-            if (_CurrentLine.StartsWith(new string('*', 39) + " GRAPHIC : "))
-            {
-                LineType = LineType.MARKER;
-                ElementReadingState = ElementReadingStates.CREATED;
-                return;
-            }
-
-            if (_CurrentLine == new string('*', 39) + " COMPLETED " + new string('*', 39))
-            {
-                LineType = LineType.MARKER;
-                ElementReadingState = ElementReadingStates.COMPLETED;
-                return;
-            }
-
-            if (_CurrentLine == "Label properties { " && ElementReadingState == ElementReadingStates.READING)
-            {
-                LineType = LineType.MARKER;
-                ElementReadingState = ElementReadingStates.READING_PROPERTIES;
-                return;
-            }
-
             if (_CurrentLine == "}" && ElementReadingState == ElementReadingStates.READING_PROPERTIES)
             {
-                LineType = LineType.MARKER;
+                //LineType = LineType.MARKER;
                 ElementReadingState = ElementReadingStates.READING;
                 return;
             }
 
             if (_CurrentLine == "GROUP_TYPE" && ElementReadingState == ElementReadingStates.READING)
             {
-                LineType = LineType.MARKER;
+                //LineType = LineType.MARKER;
                 ElementReadingState = ElementReadingStates.READING_GEOMETRY;
                 GeometryReadingState = GeometryReadingStates.READING_STARTED;
                 return;
@@ -152,10 +172,22 @@ namespace IfcConverter.Domain.Models.Vue.Services
 
             if (_CurrentLine == "GROUP_END" && ElementReadingState == ElementReadingStates.READING_GEOMETRY)
             {
-                LineType = LineType.MARKER;
+                //LineType = LineType.MARKER;
                 ElementReadingState = ElementReadingStates.READING;
                 GeometryReadingState = GeometryReadingStates.READING_ENDED;
                 return;
+            }
+
+            if (_CurrentLine == "{" && GeometryReadingState == GeometryReadingStates.READING_STARTED)
+            {
+                //LineType = LineType.MARKER;
+                GeometryReadingState = GeometryReadingStates.READING_PROPERTIES;
+            }
+
+            if (_CurrentLine == "GROUP_START")
+            {
+                //LineType = LineType.MARKER;
+                GeometryReadingState = GeometryReadingStates.READING;
             }
 
             // ТОЧНО НЕ МАРКЕР
@@ -171,13 +203,6 @@ namespace IfcConverter.Domain.Models.Vue.Services
 
             // переключаем, т.к. READING_ENDED - всего одна строчка
             if (GeometryReadingState == GeometryReadingStates.READING_ENDED) { GeometryReadingState = GeometryReadingStates.NOT_READING; }
-
-            // Какие данные считаются нужными для парсинга
-            if (ElementReadingState == ElementReadingStates.READING_PROPERTIES) { LineType = LineType.DATA; }
-
-            // в течении всей фукнкции не переключился LineDefinition,
-            // и Denifnition - точно не MARKER. По этому переключаем на неизвестный
-            if (LineType == LineType.MARKER) { LineType = LineType.UNDEFINDED; }
         }
     }
 }

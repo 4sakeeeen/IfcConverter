@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows;
 using Xbim.Common;
 using Xbim.Ifc;
@@ -353,11 +354,8 @@ namespace IfcConverter.Client.Windows
 
         private void BtnOpenVueFile_Click(object sender, RoutedEventArgs e)
         {
-
             VueReader vueReader = new("C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\УЗК.txt");
             VueModel vueModel2 = vueReader.GetModel();
-
-
 
             VueModel? vueModel = JsonSerializer.Deserialize<VueModel>(File.ReadAllText(TbVueFilePath.Text)) ?? throw new Exception("Json did not parsed correctly");
             Elements? geomElements = (vueModel.GraphicElements[0].Geometry?.Elements) ?? throw new Exception("Provided vue geometry elements not set");
