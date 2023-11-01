@@ -1,208 +1,354 @@
-﻿using IfcConverter.Domain.Models.Vue.Services.Common;
-using System.Text.RegularExpressions;
+﻿using IfcConverter.Domain.Models.Vue.Common;
+using IfcConverter.Domain.Models.Vue.Geometries;
 
 namespace IfcConverter.Domain.Models.Vue.Services
 {
-    public class VueReader
+    public static class VueReader
     {
-        private readonly string _FilePath;
-
-        private string? _CurrentLine = null;
-
-
-        public LineType LineType
+        public static List<Line> ParseLines(string data)
         {
-            get
-            {
-                string[] markerRexPatterns =
-                {
-                    "\\*{39} GRAPHIC : \\d+ INFO \\*{30}",
-                    "Label properties { ",
-                    "{",
-                    "}",
-                    "GROUP_TYPE",
-                    "GROUP_START",
-                    "GROUP_END"
-                };
+            List<Line> lines = new();
 
-                if (_CurrentLine == null) { return LineType.UNDEFINDED; }
-                if (markerRexPatterns.Any(pattern => Regex.IsMatch(_CurrentLine, pattern)))
+            foreach (string txtRow in data.Split("\r\n"))
+            {
+                if (txtRow.StartsWith("Element No. :")) { lines.Add(new Line { ElementNo = int.Parse(txtRow.Split(" : ")[1]) }); }
+                if (txtRow.StartsWith("Aspect No. :")) { lines.Last().AspectNo = int.Parse(txtRow.Split(" : ")[1]); };
+
+                if (txtRow == "Start Point :")
                 {
-                    return LineType.MARKER;
+                    lines.Last().StartPoint = new() { X = int.MaxValue, Y = int.MaxValue, Z = int.MaxValue };
                 }
-                else
+                else if (lines.Last().StartPoint != null)
                 {
-                    // Как решить: DATA или UNDEFINDED?
-                    if (
-                        ElementReadingState == ElementReadingStates.READING_PROPERTIES
-                        || GeometryReadingState == GeometryReadingStates.READING_PROPERTIES && _CurrentLine != "{"
-                    )
+                    Position3D? startPos = lines.Last().StartPoint;
+                    if (startPos != null && startPos.Z == int.MaxValue)
                     {
-                        return LineType.DATA;
+                        if (startPos.X == int.MaxValue) { startPos.X = double.Parse(txtRow.Trim()); continue; };
+                        if (startPos.Y == int.MaxValue) { startPos.Y = double.Parse(txtRow.Trim()); continue; };
+                        if (startPos.Z == int.MaxValue) { startPos.Z = double.Parse(txtRow.Trim()); continue; };
                     }
-                    else
+                }
+
+                if (txtRow == "End   Point :")
+                {
+                    lines.Last().EndPoint = new() { X = int.MaxValue, Y = int.MaxValue, Z = int.MaxValue };
+                }
+                else if (lines.Last().EndPoint != null)
+                {
+                    Position3D? endPoint = lines.Last().EndPoint;
+                    if (endPoint != null && endPoint.Z == int.MaxValue)
                     {
-                        return LineType.UNDEFINDED;
+                        if (endPoint.X == int.MaxValue) { endPoint.X = double.Parse(txtRow.Trim()); continue; };
+                        if (endPoint.Y == int.MaxValue) { endPoint.Y = double.Parse(txtRow.Trim()); continue; };
+                        if (endPoint.Z == int.MaxValue) { endPoint.Z = double.Parse(txtRow.Trim()); continue; };
                     }
                 }
             }
+
+            return lines;
         }
 
 
-        public ElementReadingStates ElementReadingState
+        public static List<ComponentLine> ParseBoundaryLines(string data)
         {
-            get
+            List<ComponentLine> lines = new();
+
+            foreach (string txtRow in data.Split("\r\n"))
             {
-                if (_CurrentLine == null) { return ElementReadingStates.NOT_READING; }
-                if (Regex.IsMatch(_CurrentLine, "\\*{39} GRAPHIC : \\d+ INFO \\*{30}")) { return ElementReadingStates.CREATED; }
-                if (Regex.IsMatch(_CurrentLine, "\\*{39} COMPLETED \\*{39}")) { return ElementReadingStates.COMPLETED; }
-                if (_CurrentLine == "Label properties { ") { return ElementReadingStates.READING_PROPERTIES; }
+                if (txtRow.StartsWith("CURVE :")) { lines.Add(new ComponentLine { CurveNo = int.Parse(txtRow.Split(" : ")[1]) }); }
+
+                if (txtRow == "Start Point :")
+                {
+                    lines.Last().StartPoint = new() { X = int.MaxValue, Y = int.MaxValue, Z = int.MaxValue };
+                }
+                else if (lines.Last().StartPoint != null)
+                {
+                    Position3D? startPos = lines.Last().StartPoint;
+                    if (startPos != null && startPos.Z == int.MaxValue)
+                    {
+                        if (startPos.X == int.MaxValue) { startPos.X = double.Parse(txtRow.Trim()); continue; };
+                        if (startPos.Y == int.MaxValue) { startPos.Y = double.Parse(txtRow.Trim()); continue; };
+                        if (startPos.Z == int.MaxValue) { startPos.Z = double.Parse(txtRow.Trim()); continue; };
+                    }
+                }
+
+                if (txtRow == "End   Point :")
+                {
+                    lines.Last().EndPoint = new() { X = int.MaxValue, Y = int.MaxValue, Z = int.MaxValue };
+                }
+                else if (lines.Last().EndPoint != null)
+                {
+                    Position3D? endPoint = lines.Last().EndPoint;
+                    if (endPoint != null && endPoint.Z == int.MaxValue)
+                    {
+                        if (endPoint.X == int.MaxValue) { endPoint.X = double.Parse(txtRow.Trim()); continue; };
+                        if (endPoint.Y == int.MaxValue) { endPoint.Y = double.Parse(txtRow.Trim()); continue; };
+                        if (endPoint.Z == int.MaxValue) { endPoint.Z = double.Parse(txtRow.Trim()); continue; };
+                    }
+                }
             }
-            set
-            {
-                if (_ElementReadingState == value) { throw new Exception($"Try to set element reading status to same value '{value}'"); }
-                _ElementReadingState = value;
-            }
+
+            return lines;
         }
 
 
-        private GeometryReadingStates _GeometryReadingState = GeometryReadingStates.NOT_READING;
-
-        public GeometryReadingStates GeometryReadingState
+        public static Dictionary<string, string?> ParseDictionary(string data)
         {
-            get { return _GeometryReadingState; }
-            set
+            Dictionary<string, string?> values = new();
+
+            foreach (string key in data.Split("\r\n"))
             {
-                if (_GeometryReadingState == value) { throw new Exception($"Try to set geometry reading status to same value '{value}'"); }
-                _GeometryReadingState = value;
+                string[] pair = key.Split(':');
+                string v = pair[1].Trim();
+                values.Add(pair[0].Trim(), !string.IsNullOrEmpty(v) ? v : null);
             }
+
+            return values;
         }
 
 
-        public VueReader(string filePath) { _FilePath = filePath; }
-
-
-        public VueModel GetModel()
+        public static VueModel ParseModel(string filePath)
         {
+            using StreamReader reader = new(filePath);
             VueModel model = new();
-            using StreamReader reader = new(_FilePath);
             string? line = null;
-            GraphicElement? currentGraphicElement = null;
-            GeometryGroup? currentGeometryGroup = null;
+            string index = "0";
+
+            bool isGraphicElementReading = false;
+            List<string> graphicElementLines = new();
 
             while ((line = reader.ReadLine()) != null)
             {
-                _CurrentLine = line;
-                try
-                {
-                    ActualizeStatuses();
+                if (line.StartsWith("*************************************** COMPLETED ***************************************")) { isGraphicElementReading = false; }
+                if (isGraphicElementReading)
+                { 
+                    graphicElementLines.Add(line);
                 }
-                catch (Exception e)
+                else if (graphicElementLines.Count > 1)
                 {
-                    throw new Exception("", e);
-                }
-
-                if (LineType == LineType.MARKER)
-                {
-                    switch (ElementReadingState)
+                    if (model.GraphicElements.Count < 1500)
                     {
-                        case ElementReadingStates.CREATED:
-                            currentGraphicElement = new GraphicElement();
-                            break;
-
-                        case ElementReadingStates.COMPLETED:
-                            if (currentGraphicElement == null) { throw new Exception("Graphic element ending excepted but instance not created"); }
-                            model.GraphicElements.Add(currentGraphicElement);
-                            currentGraphicElement = null;
-                            break;
+                        if (!model.GraphicElements.ContainsKey(index))
+                        {
+                            model.GraphicElements.Add(index, ParseGraphicElement(graphicElementLines));
+                        }
                     }
-
-                    switch (GeometryReadingState)
+                    else
                     {
-                        case GeometryReadingStates.READING_STARTED:
-                            currentGeometryGroup = new GeometryGroup();
-                            break;
-
-                        case GeometryReadingStates.READING_ENDED:
-                            if (currentGraphicElement == null) { throw new Exception("Graphic element's geometry ending excepted but instance not created"); }
-                            currentGraphicElement.Geometry = currentGeometryGroup;
-                            currentGeometryGroup = null;
-                            break;
+                        continue;
                     }
                 }
-
-                if (LineType == LineType.DATA)
+                if (line.StartsWith("*************************************** GRAPHIC : "))
                 {
-                    if (ElementReadingState == ElementReadingStates.READING_PROPERTIES)
-                    {
-                        if (currentGraphicElement == null) { throw new Exception("Property excepted but instance not created"); }
-                        string[] propValues = _CurrentLine.Split(" : ");
-                        currentGraphicElement.LabelProperties.Add(propValues[0], propValues[1]);
-                    }
-
-                    if (GeometryReadingState == GeometryReadingStates.READING_PROPERTIES)
-                    {
-                        var f = _CurrentLine;
-                    }
-                }
+                    isGraphicElementReading = true;
+                    index = line.Split("GRAPHIC : ")[1].Split(" INFO **")[0];
+                }             
             }
 
             return model;
         }
-    
 
-        private void ActualizeStatuses()
+
+        public static GraphicElement ParseGraphicElement(List<string> graphicElementLines)
         {
-            if (_CurrentLine == null) { throw new Exception("Actualizing reader states was failed. Reader's current line is null."); }
+            GraphicElement graphicElement = new();
 
-            if (_CurrentLine == "}" && ElementReadingState == ElementReadingStates.READING_PROPERTIES)
+            bool isLabelProperties = false;
+            List<string> labelPropertiesLines = new();
+
+            bool isGroupTypeReading = false;
+            List<string> groupTypeLines = new();
+
+            graphicElementLines.ForEach(l =>
             {
-                //LineType = LineType.MARKER;
-                ElementReadingState = ElementReadingStates.READING;
-                return;
+                if (l == "}") { isLabelProperties = false; }
+                if (isLabelProperties)
+                {
+                    labelPropertiesLines.Add(l);
+                }
+                else if (labelPropertiesLines.Count > 1)
+                {
+                    graphicElement.LabelProperties = ParseLabelProperties(labelPropertiesLines);
+                    labelPropertiesLines = new();
+                }
+                if (l == "Label properties { ") { isLabelProperties = true; }
+
+                if (l == "GROUP_END") { isGroupTypeReading = false; }
+                if (isGroupTypeReading)
+                {
+                    groupTypeLines.Add(l);
+                }
+                else if (groupTypeLines.Count > 1)
+                {
+                    graphicElement.Geometry = ParseGroupType(groupTypeLines);
+                    groupTypeLines = new();
+                }
+                if (l == "GROUP_TYPE") { isGroupTypeReading = true; }
+            });
+
+            return graphicElement;
+        }
+
+
+        public static Dictionary<string, string?> ParseLabelProperties(List<string> labelPropertiesLines)
+        {
+            Dictionary<string, string?> properties = new(labelPropertiesLines.Count);
+            labelPropertiesLines.ForEach(labelPropertiesLine =>
+            {
+                string[] values = labelPropertiesLine.Split(" : ");
+                properties.Add(values[0], values[1]);
+            });
+            return properties;
+        }
+
+
+        public static GeometryGroup ParseGroupType(List<string> groupTypeLines)
+        {
+            GeometryGroup geometry = new();
+            List<string> geometryLines = new();
+
+            for (int i = 0; i < groupTypeLines.Count; i++)
+            {
+                if (groupTypeLines[i].StartsWith("Element No. :"))
+                {
+                    object? element = ParseGeometryElement(geometryLines);
+                    if (element is Line line) { geometry.Elements.Lines.Add(line); }
+                    if (element is Projection projection) { geometry.Elements.Projections.Add(projection); }
+                    if (element is Plane plane) { geometry.Elements.Planes.Add(plane); }
+                    geometryLines = new();
+                }
+
+                geometryLines.Add(groupTypeLines[i]);
             }
 
-            if (_CurrentLine == "GROUP_TYPE" && ElementReadingState == ElementReadingStates.READING)
+            object? element2 = ParseGeometryElement(geometryLines);
+            if (element2 is Line line2) { geometry.Elements.Lines.Add(line2); }
+            if (element2 is Projection projection2) { geometry.Elements.Projections.Add(projection2); }
+            if (element2 is Plane plane2) { geometry.Elements.Planes.Add(plane2); }
+
+            return geometry;
+        }
+
+        
+        public static object? ParseGeometryElement(List<string> geometryLines)
+        {
+            if (geometryLines.Count < 4) return null;
+            return geometryLines[2] switch
             {
-                //LineType = LineType.MARKER;
-                ElementReadingState = ElementReadingStates.READING_GEOMETRY;
-                GeometryReadingState = GeometryReadingStates.READING_STARTED;
-                return;
+                "LINE_TYPE" => ParseLine(geometryLines),
+                "PROJECTION_TYPE" => ParseProjection(geometryLines),
+                "PLANE_TYPE" => ParsePlane(geometryLines),
+                _ => null,
+            };
+        }
+
+
+        public static Line ParseLine(List<string> geometryLines)
+        {
+            return new Line
+            {
+                ElementNo = int.Parse(geometryLines[0].Split(" : ")[1]),
+                AspectNo = int.Parse(geometryLines[1].Split(" : ")[1]),
+                StartPoint = new Position3D
+                {
+                    X = double.Parse(geometryLines[5].Trim()),
+                    Y = double.Parse(geometryLines[6].Trim()),
+                    Z = double.Parse(geometryLines[7].Trim())
+                },
+                EndPoint = new Position3D
+                {
+                    X = double.Parse(geometryLines[9].Trim()),
+                    Y = double.Parse(geometryLines[10].Trim()),
+                    Z = double.Parse(geometryLines[11].Trim())
+                }
+            };
+        }
+
+
+        public static Projection ParseProjection(List<string> geometryLines)
+        {
+            List<string> positions = geometryLines.GetRange(geometryLines.IndexOf("Positions") + 1, geometryLines.Count - geometryLines.IndexOf("Positions") - 4);
+            return new Projection
+            {
+                //Vector = new Vector3D
+                //{
+                //    X = double.Parse(geometryLines[geometryLines.IndexOf("Projec Vector: ") + 1]),
+                //    Y = double.Parse(geometryLines[geometryLines.IndexOf("Projec Vector: ") + 2]),
+                //    Z = double.Parse(geometryLines[geometryLines.IndexOf("Projec Vector: ") + 3])
+                //},
+                //Positions = ParsePositions(positions)
+            };
+        }
+
+
+        public static List<Position3D> ParsePositions(List<string> positionLines)
+        {
+            List<Position3D> positions = new();
+            
+            for (int i = 0; i < positionLines.Count; i += 4)
+            {
+                positions.Add(new Position3D
+                {
+                    X = double.Parse(positionLines[i]),
+                    Y = double.Parse(positionLines[i + 1]),
+                    Z = double.Parse(positionLines[i + 2])
+                });
             }
 
-            if (_CurrentLine == "GROUP_END" && ElementReadingState == ElementReadingStates.READING_GEOMETRY)
+            return positions;
+        }
+
+
+        public static Plane? ParsePlane(List<string> geometryLines)
+        {
+            if (geometryLines.Contains("ELLIPSE_TYPE")) { return null; }
+            Plane plane = new()
             {
-                //LineType = LineType.MARKER;
-                ElementReadingState = ElementReadingStates.READING;
-                GeometryReadingState = GeometryReadingStates.READING_ENDED;
-                return;
+                Normal = new Vector3D
+                {
+                    X = double.Parse(geometryLines.ElementAt(5)),
+                    Y = double.Parse(geometryLines.ElementAt(6)),
+                    Z = double.Parse(geometryLines.ElementAt(7))
+                },
+                UDirection = new Vector3D
+                {
+                    X = double.Parse(geometryLines.ElementAt(9)),
+                    Y = double.Parse(geometryLines.ElementAt(10)),
+                    Z = double.Parse(geometryLines.ElementAt(11))
+                },
+                Boundaries = new()
+                {
+                    Lines = ParseComponentLines(geometryLines.GetRange(geometryLines.IndexOf("BOUNDARY_START : 1") + 2, geometryLines.IndexOf("BOUNDARY_END : 1") - geometryLines.IndexOf("BOUNDARY_START : 1") - 2))
+                }
+            };
+            return plane;
+        }
+
+
+        public static List<ComponentLine> ParseComponentLines(List<string> geometryLines)
+        {
+            List<ComponentLine> lines = new();
+
+            for (int i = 0; i < geometryLines.FindAll(x => x == "LINE_TYPE").Count; i++)
+            {
+                lines.Add(new ComponentLine
+                {
+                    StartPoint = new Position3D
+                    {
+                        X = double.Parse(geometryLines[i + 4 + lines.Count * 11]),
+                        Y = double.Parse(geometryLines[i + 5 + lines.Count * 11]),
+                        Z = double.Parse(geometryLines[i + 6 + lines.Count * 11])
+                    },
+                    EndPoint = new Position3D
+                    {
+                        X = double.Parse(geometryLines[i + 8 + lines.Count * 11]),
+                        Y = double.Parse(geometryLines[i + 9 + lines.Count * 11]),
+                        Z = double.Parse(geometryLines[i + 10 + lines.Count * 11])
+                    }
+                });
             }
 
-            if (_CurrentLine == "{" && GeometryReadingState == GeometryReadingStates.READING_STARTED)
-            {
-                //LineType = LineType.MARKER;
-                GeometryReadingState = GeometryReadingStates.READING_PROPERTIES;
-            }
-
-            if (_CurrentLine == "GROUP_START")
-            {
-                //LineType = LineType.MARKER;
-                GeometryReadingState = GeometryReadingStates.READING;
-            }
-
-            // ТОЧНО НЕ МАРКЕР
-
-            // переключаем, т.к.CREATED - всего одна строчка
-            if (ElementReadingState == ElementReadingStates.CREATED) { ElementReadingState = ElementReadingStates.READING; }
-
-            // переключаем, т.к. COMPLETED - всего одна строчка
-            if (ElementReadingState == ElementReadingStates.COMPLETED) { ElementReadingState = ElementReadingStates.NOT_READING; }
-
-            // переключаем, т.к. READING_STARTED - всего одна строчка
-            if (GeometryReadingState == GeometryReadingStates.READING_STARTED) { GeometryReadingState = GeometryReadingStates.READING; }
-
-            // переключаем, т.к. READING_ENDED - всего одна строчка
-            if (GeometryReadingState == GeometryReadingStates.READING_ENDED) { GeometryReadingState = GeometryReadingStates.NOT_READING; }
+            return lines;
         }
     }
 }

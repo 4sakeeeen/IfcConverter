@@ -2,6 +2,10 @@
     x:Class="IfcConverter.Client.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:IfcConverter.Client.ViewModels"
     StartupUri="Windows\MainWindow.xaml">
-    <Application.Resources />
+    <Application.Resources>
+        <vm:MainWindowViewModel x:Key="MainWindowViewModel" />
+        <vm:SettingsWindowViewModel x:Key="SettingsWindowViewModel" />
+    </Application.Resources>
 </Application>

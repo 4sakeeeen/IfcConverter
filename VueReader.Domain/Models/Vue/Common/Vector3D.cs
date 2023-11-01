@@ -5,12 +5,18 @@ namespace IfcConverter.Domain.Models.Vue.Common
     public class Vector3D
     {
         [JsonPropertyName("X")]
-        public int X { get; set; }
+        public double X { get; set; }
 
         [JsonPropertyName("Y")]
-        public int Y { get; set; }
+        public double Y { get; set; }
 
         [JsonPropertyName("Z")]
-        public int Z { get; set; }
+        public double Z { get; set; }
+
+        [JsonIgnore]
+        public double Length
+        {
+            get { return Math.Sqrt(Math.Pow(X, 2) + Math.Pow(Y, 2) + Math.Pow(Z, 2)); }
+        }
     }
 }

@@ -6,6 +6,6 @@ namespace IfcConverter.Domain.Models.Vue.Common.Collections
     public class Boundaries
     {
         [JsonPropertyName("LINE_TYPE")]
-        public List<Line> Lines { get; set; } = new();
+        public List<ComponentLine> Lines { get; set; } = new();
     }
 }

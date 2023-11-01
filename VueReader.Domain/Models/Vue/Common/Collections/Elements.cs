@@ -7,5 +7,11 @@ namespace IfcConverter.Domain.Models.Vue.Common.Collections
     {
         [JsonPropertyName("PLANE_TYPE")]
         public List<Plane> Planes { get; set; } = new();
+
+        [JsonPropertyName("LINE_TYPE")]
+        public List<Line> Lines { get; set; } = new();
+
+        [JsonPropertyName("PROJECTION_TYPE")]
+        public List<Projection> Projections { get; set; } = new();
     }
 }

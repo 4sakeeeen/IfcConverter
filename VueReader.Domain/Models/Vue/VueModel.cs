@@ -5,6 +5,6 @@ namespace IfcConverter.Domain.Models.Vue
     public class VueModel
     {
         [JsonPropertyName("graphicElements")]
-        public List<GraphicElement> GraphicElements { get; set; } = new();
+        public Dictionary<string, GraphicElement> GraphicElements { get; set; } = new();
     }
 }

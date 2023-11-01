@@ -1,12 +1,15 @@
-﻿using System.Text.Json.Serialization;
-using IfcConverter.Domain.Models.Vue.Common;
+﻿using IfcConverter.Domain.Models.Vue.Common;
+using System.Text.Json.Serialization;
 
 namespace IfcConverter.Domain.Models.Vue.Geometries
 {
     public class Line
     {
-        [JsonPropertyName("Curve No.")]
-        public int CurveNo { get; set; }
+        [JsonPropertyName("Element No.")]
+        public int ElementNo { get; set; }
+
+        [JsonPropertyName("Aspect No.")]
+        public int AspectNo { get; set; }
 
         [JsonPropertyName("Start Point")]
         public Position3D? StartPoint { get; set; }
