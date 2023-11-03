@@ -6,7 +6,9 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -100,6 +102,7 @@ namespace IfcConverter.Client.ViewModels
                         this.FileMajorVersion = sourceFileInfo.FileMajorVersion;
                         this.FileMinorVersion = sourceFileInfo.FileMinorVersion;
 
+                        int elIndex = 0;
 
                         while (errorCode != eErrorCode.E_EOF)
                         {
@@ -114,111 +117,120 @@ namespace IfcConverter.Client.ViewModels
                             IfcService.InTransaction(ifcModel, "Create product", () =>
                             {
                                 IfcMember element = ifcModel.Instances.New<IfcMember>(member => member.Name = properties["Name"]);
-                                properties.TryGetValue("System Path", out string? systemPath);
-                                IfcService.BuildAndDecomposeHierarchy(buildingStorey, element, systemPath);
+                                //properties.TryGetValue("System Path", out string? systemPath);
+                                //IfcService.BuildAndDecomposeHierarchy(buildingStorey, element, systemPath);
 
-                                switch (gtype)
+                                try
                                 {
-                                    case eGraphicType.GROUP_TYPE:
-                                        vueGroups.Add(VueService.ConvertGroupTypeGeometry(oGeom as IRdGroup ?? throw new Exception()));
-                                        break;
-                                        if (oGeom is IRdGroup group)
-                                        {
-                                            IngrGeom? geom = null;
-                                            RdMaterialProperties? material = null;
-                                            group.GetElementCountFromGroup(out int count);
-
-                                            for (int i = 0; i < count; i++)
+                                    switch (gtype)
+                                    {
+                                        case eGraphicType.GROUP_TYPE:
+                                            vueGroups.Add(new VueGroup((IRdGroup)oGeom));
+                                            break;
+                                            if (oGeom is IRdGroup group)
                                             {
-                                                group.GetElementFromGroup(i, out eGraphicType _type, ref geom, ref material);
-                                                group.GetAspectFromGroup(i, out int aspect);
+                                                IngrGeom? geom = null;
+                                                RdMaterialProperties? material = null;
+                                                group.GetElementCountFromGroup(out int count);
 
-                                                switch (_type)
+                                                for (int i = 0; i < count; i++)
                                                 {
-                                                    case eGraphicType.PLANE_TYPE:
-                                                        RdBoundary? boundary = null;
+                                                    group.GetElementFromGroup(i, out eGraphicType _type, ref geom, ref material);
+                                                    group.GetAspectFromGroup(i, out int aspect);
 
-                                                        if (geom is IRdPlane plane)
-                                                        {
-                                                            plane.GetNormal(out Position normal);
-                                                            plane.GetuDirection(out Position dir);
-                                                            plane.ReadBoundary(ref boundary);
-                                                            element.Representation = ifcModel.Instances.New<IfcProductDefinitionShape>();
-                                                            element.Representation.Representations.Add(ifcModel.Instances.New<IfcShapeRepresentation>(shrep =>
+                                                    switch (_type)
+                                                    {
+                                                        case eGraphicType.PLANE_TYPE:
+                                                            RdBoundary? boundary = null;
+
+                                                            if (geom is IRdPlane plane)
                                                             {
-                                                                shrep.ContextOfItems = ifcModel.Instances.OfType<IfcGeometricRepresentationContext>().FirstOrDefault();
-                                                                shrep.Items.Add(ifcModel.Instances.New<IfcFacetedBrep>(
-                                                                    brep => brep.Outer = ifcModel.Instances.New<IfcClosedShell>(shell => shell.CfsFaces.Add(ifcModel.Instances.New<IfcFace>(face =>
-                                                                        face.Bounds.Add(ifcModel.Instances.New<IfcFaceOuterBound>(
-                                                                            bound => bound.Bound = ifcModel.Instances.New<IfcPolyLoop>(loop =>
-                                                                            {
-                                                                                var uniqueVertices = new List<Position>();
-                                                                                boundary.GetBoundaryCount(out int boundaryCount);
-
-                                                                                for (int y = 0; y < boundaryCount; y++)
+                                                                plane.GetNormal(out Position normal);
+                                                                plane.GetuDirection(out Position dir);
+                                                                plane.ReadBoundary(ref boundary);
+                                                                element.Representation = ifcModel.Instances.New<IfcProductDefinitionShape>();
+                                                                element.Representation.Representations.Add(ifcModel.Instances.New<IfcShapeRepresentation>(shrep =>
+                                                                {
+                                                                    shrep.ContextOfItems = ifcModel.Instances.OfType<IfcGeometricRepresentationContext>().FirstOrDefault();
+                                                                    shrep.Items.Add(ifcModel.Instances.New<IfcFacetedBrep>(
+                                                                        brep => brep.Outer = ifcModel.Instances.New<IfcClosedShell>(shell => shell.CfsFaces.Add(ifcModel.Instances.New<IfcFace>(face =>
+                                                                            face.Bounds.Add(ifcModel.Instances.New<IfcFaceOuterBound>(
+                                                                                bound => bound.Bound = ifcModel.Instances.New<IfcPolyLoop>(loop =>
                                                                                 {
-                                                                                    boundary.GetBoundaryCurveCount(y, out int curveCount);
+                                                                                    var uniqueVertices = new List<Position>();
+                                                                                    boundary.GetBoundaryCount(out int boundaryCount);
 
-                                                                                    for (int c = 0; c < curveCount; c++)
+                                                                                    for (int y = 0; y < boundaryCount; y++)
                                                                                     {
-                                                                                        IngrGeom? curveGeom = null;
-                                                                                        boundary.GetBoundaryCurve(y, c, ref curveGeom, out eGraphicType curveType);
+                                                                                        boundary.GetBoundaryCurveCount(y, out int curveCount);
 
-                                                                                        switch (curveType)
+                                                                                        for (int c = 0; c < curveCount; c++)
                                                                                         {
-                                                                                            case eGraphicType.LINESTRING_TYPE:
-                                                                                                if (curveGeom is IRdLineString lineString)
-                                                                                                {
-                                                                                                    lineString.GetVertices(out Array vertices, out int verticeCount);
-                                                                                                    vertices.Cast<Position>().ToList().ForEach(v =>
+                                                                                            IngrGeom? curveGeom = null;
+                                                                                            boundary.GetBoundaryCurve(y, c, ref curveGeom, out eGraphicType curveType);
+
+                                                                                            switch (curveType)
+                                                                                            {
+                                                                                                case eGraphicType.LINESTRING_TYPE:
+                                                                                                    if (curveGeom is IRdLineString lineString)
                                                                                                     {
-                                                                                                        if (!uniqueVertices.Contains(v))
+                                                                                                        lineString.GetVertices(out Array vertices, out int verticeCount);
+                                                                                                        vertices.Cast<Position>().ToList().ForEach(v =>
                                                                                                         {
-                                                                                                            uniqueVertices.Add(v);
-                                                                                                        }
-                                                                                                    });
-                                                                                                }
-                                                                                                break;
+                                                                                                            if (!uniqueVertices.Contains(v))
+                                                                                                            {
+                                                                                                                uniqueVertices.Add(v);
+                                                                                                            }
+                                                                                                        });
+                                                                                                    }
+                                                                                                    break;
 
-                                                                                            case eGraphicType.BSPCURVE_TYPE:
-                                                                                                break;
+                                                                                                case eGraphicType.BSPCURVE_TYPE:
+                                                                                                    break;
 
-                                                                                            case eGraphicType.LINE_TYPE:
-                                                                                                if (curveGeom is IRdLine line)
-                                                                                                {
-                                                                                                    line.GetLineEndPoints(out Position startPoint, out Position endPoint);
-                                                                                                    if (!uniqueVertices.Contains(startPoint)) { uniqueVertices.Add(startPoint); }
-                                                                                                    if (!uniqueVertices.Contains(endPoint)) { uniqueVertices.Add(endPoint); }
-                                                                                                }
-                                                                                                break;
+                                                                                                case eGraphicType.LINE_TYPE:
+                                                                                                    if (curveGeom is IRdLine line)
+                                                                                                    {
+                                                                                                        line.GetLineEndPoints(out Position startPoint, out Position endPoint);
+                                                                                                        if (!uniqueVertices.Contains(startPoint)) { uniqueVertices.Add(startPoint); }
+                                                                                                        if (!uniqueVertices.Contains(endPoint)) { uniqueVertices.Add(endPoint); }
+                                                                                                    }
+                                                                                                    break;
 
-                                                                                            case eGraphicType.ARC_TYPE:
-                                                                                                break;
+                                                                                                case eGraphicType.ARC_TYPE:
+                                                                                                    break;
 
-                                                                                            case eGraphicType.ELLIPSE_TYPE:
-                                                                                                break;
+                                                                                                case eGraphicType.ELLIPSE_TYPE:
+                                                                                                    break;
 
-                                                                                            default:
-                                                                                                throw new Exception($"Invalid curve TYPE: {curveType}");
+                                                                                                default:
+                                                                                                    throw new Exception($"Invalid curve TYPE: {curveType}");
+                                                                                            }
                                                                                         }
                                                                                     }
-                                                                                }
 
-                                                                                uniqueVertices.ForEach(p => loop.Polygon.Add(ifcModel.Instances.New<IfcCartesianPoint>(point => point.SetXYZ(p.m_xPosition, p.m_yPosition, p.m_zPosition))));
-                                                                            })
-                                                                        ))
-                                                                    )))
-                                                                ));
-                                                            }));
-                                                        }
-                                                        break;
+                                                                                    uniqueVertices.ForEach(p => loop.Polygon.Add(ifcModel.Instances.New<IfcCartesianPoint>(point => point.SetXYZ(p.m_xPosition, p.m_yPosition, p.m_zPosition))));
+                                                                                })
+                                                                            ))
+                                                                        )))
+                                                                    ));
+                                                                }));
+                                                            }
+                                                            break;
+                                                    }
                                                 }
                                             }
-                                        }
-                                        break;
+                                            break;
 
-                                    default:
-                                        throw new Exception($"Invalid graphic element TYPE: {gtype}");
+                                        default:
+                                            throw new Exception($"Invalid graphic element TYPE: {gtype}");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    using var writer = new StreamWriter($"general.log", true, Encoding.ASCII);
+                                    properties.TryGetValue("Name", out string? elementName);
+                                    writer.WriteLine($"Element {++elIndex}: {ex.Message}");
                                 }
                             });
 
