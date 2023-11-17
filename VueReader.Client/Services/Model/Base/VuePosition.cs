@@ -12,7 +12,6 @@ namespace IfcConverter.Client.Services.Model.Base
 
         public double Z { get; }
 
-
         public VuePosition(Position position)
         {
             this.X = position.m_xPosition;

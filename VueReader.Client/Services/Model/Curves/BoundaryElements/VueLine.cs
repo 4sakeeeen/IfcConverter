@@ -1,11 +1,9 @@
 ﻿using IfcConverter.Client.Services.Model.Base;
 using IngrDataReadLib;
-using Xbim.Common;
-using Xbim.Ifc4.GeometryResource;
 
 namespace IfcConverter.Client.Services.Model.Curves.BoundaryElements
 {
-    public sealed class VueLine : IBoundaryElement, IIfcConvertable<IfcLine>
+    public sealed class VueLine : IBoundaryElement
     {
         public VuePosition StartPoint { get; }
 
@@ -16,11 +14,6 @@ namespace IfcConverter.Client.Services.Model.Curves.BoundaryElements
             line.GetLineEndPoints(out Position startPoint, out Position endPoint);
             this.StartPoint = new VuePosition(startPoint);
             this.EndPoint = new VuePosition(endPoint);
-        }
-
-        public IfcLine IfcConvert(IModel model)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

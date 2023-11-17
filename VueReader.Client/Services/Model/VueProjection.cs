@@ -2,10 +2,13 @@
 using IfcConverter.Client.Services.Model.Curves.BoundaryElements;
 using IngrDataReadLib;
 using System;
+using Xbim.Common;
+using Xbim.Ifc4.GeometricModelResource;
+using Xbim.Ifc4.GeometryResource;
 
 namespace IfcConverter.Client.Services.Model
 {
-    public sealed class VueProjection : VueGraphicElement
+    public sealed class VueProjection : VueGeometryElement, IConvertable<IfcSolidModel>
     {
         public VuePosition SweepVector { get; }
 
@@ -41,6 +44,11 @@ namespace IfcConverter.Client.Services.Model
             this.SweepVector = new VuePosition(vector);
             this.IsCapped = isCapped == 1;
             this.IsOrthogonal = isOrthogonal == 1;
+        }
+
+        public IfcSolidModel Convert(IModel model)
+        {
+            throw new NotImplementedException();
         }
     }
 }

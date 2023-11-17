@@ -4,18 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xbim.Common;
+using Xbim.Ifc4.GeometryResource;
 using Xbim.Ifc4.RepresentationResource;
 
 namespace IfcConverter.Client.Services.Model
 {
-    public sealed class VueGroup : IIfcConvertable<IfcShapeRepresentation>
+    public sealed class VueGroup : IConvertable<IfcShapeRepresentation>
     {
-        public List<VueGraphicElement> GraphicElements { get; } = new();
+        private readonly List<VueGeometryElement> _GeometryElements = new();
+
 
         public VueGroup(IRdGroup group)
         {
             group.GetElementCountFromGroup(out int count);
-
             IngrGeom? geometry = null;
             RdMaterialProperties? materialProperties = null;
 
@@ -26,33 +27,40 @@ namespace IfcConverter.Client.Services.Model
 
                 try
                 {
-                    switch (type)
+                    if (geometry is IRdTessData tessData)
                     {
-                        case eGraphicType.PLANE_TYPE:
-                            GraphicElements.Add(new VuePlane(aspectNo, i, (IRdPlane)geometry));
-                            break;
+                        this._GeometryElements.Add(new VueTessellatedElement(aspectNo, i, tessData));
+                    }
+                    else
+                    {
+                        switch (type)
+                        {
+                            case eGraphicType.PLANE_TYPE:
+                                // new VuePlane(aspectNo, i, (IRdPlane)geometry);
+                                break;
 
-                        case eGraphicType.PROJECTION_TYPE:
-                            GraphicElements.Add(new VueProjection(aspectNo, i, (IRdProjection)geometry));
-                            break;
+                            case eGraphicType.PROJECTION_TYPE:
+                                // new VueProjection(aspectNo, i, (IRdProjection)geometry);
+                                break;
 
-                        case eGraphicType.LINESTRING_TYPE:
-                            break;
+                            case eGraphicType.LINESTRING_TYPE:
+                                break;
 
-                        case eGraphicType.CONE_TYPE:
-                            break;
+                            case eGraphicType.CONE_TYPE:
+                                break;
 
-                        case eGraphicType.REVOLUTION_TYPE:
-                            break;
+                            case eGraphicType.REVOLUTION_TYPE:
+                                break;
 
-                        case eGraphicType.LINE_TYPE:
-                            break;
+                            case eGraphicType.LINE_TYPE:
+                                break;
 
-                        case eGraphicType.RULED_TYPE:
-                            break;
+                            case eGraphicType.RULED_TYPE:
+                                break;
 
-                        default:
-                            break;
+                            default:
+                                break;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -60,15 +68,20 @@ namespace IfcConverter.Client.Services.Model
                     throw new Exception($"Convert geometry group: one of graphic element can not be converted", ex);
                 }
             }
-
         }
 
-        public IfcShapeRepresentation IfcConvert(IModel model)
+
+        public IfcShapeRepresentation Convert(IModel model)
         {
-            return model.Instances.New<IfcShapeRepresentation>(shrep =>
+            return model.Instances.New(delegate (IfcShapeRepresentation representation)
             {
-                shrep.ContextOfItems = model.Instances.OfType<IfcGeometricRepresentationContext>().FirstOrDefault();
-                GraphicElements.ForEach(x => shrep.Items.Add(x.Convert(model)));
+                representation.ContextOfItems = model.Instances.OfType<IfcGeometricRepresentationContext>().FirstOrDefault();
+                representation.RepresentationType = "SolidModel";
+                representation.RepresentationIdentifier = "Body";
+                this._GeometryElements.ForEach(delegate (VueGeometryElement convertable)
+                {
+                    representation.Items.Add(((IConvertable<IfcGeometricRepresentationItem>)convertable).Convert(model));
+                });
             });
         }
     }

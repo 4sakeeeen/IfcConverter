@@ -2,8 +2,8 @@
 
 namespace IfcConverter.Client.Services.Model.Base
 {
-    public interface IIfcConvertable<T>
+    public interface IConvertable<T>
     {
-        public T IfcConvert(IModel model);
+        T Convert(IModel model);
     }
 }

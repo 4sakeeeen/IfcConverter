@@ -4,20 +4,19 @@ using IngrDataReadLib;
 using System;
 using System.Collections.Generic;
 using Xbim.Common;
-using Xbim.Ifc2x3.FacilitiesMgmtDomain;
 using Xbim.Ifc4.GeometricModelResource;
 using Xbim.Ifc4.GeometryResource;
-using Xbim.Ifc4.TopologyResource;
 
 namespace IfcConverter.Client.Services.Model
 {
-    public sealed class VuePlane : VueGraphicElement
+    public sealed class VuePlane : VueGeometryElement, IConvertable<IfcFacetedBrep>
     {
         public VuePosition Normal { get; }
 
         public VuePosition UDirection { get; }
 
         public List<VueBoundary> Bounds { get; }
+
 
         public VuePlane(int aspectNo, int sequenceInGroup, IRdPlane plane)
             : base(aspectNo, sequenceInGroup)
@@ -39,16 +38,9 @@ namespace IfcConverter.Client.Services.Model
             }
         }
 
-        public override IfcRepresentationItem Convert(IModel model)
+        public IfcFacetedBrep Convert(IModel model)
         {
-            return model.Instances.New<IfcFacetedBrep>(
-                brep => brep.Outer = model.Instances.New<IfcClosedShell>(
-                    shell => shell.CfsFaces.Add(model.Instances.New<IfcFace>(
-                        face => face.Bounds.Add(model.Instances.New<IfcFaceOuterBound>(
-                            bound => bound.Bound = model.Instances.New<IfcPolyLoop>(poly =>
-                            {
-
-                            })))))));
+            throw new NotImplementedException();
         }
     }
 }
