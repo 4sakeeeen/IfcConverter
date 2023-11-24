@@ -1,108 +1,91 @@
 ﻿<Window
     x:Class="IfcConverter.Client.Windows.SettingsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:domain="clr-namespace:IfcConverter.Domain.Models;assembly=IfcConverter.Domain"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vmbase="clr-namespace:IfcConverter.Client.ViewModels.Base"
+    xmlns:vm="clr-namespace:IfcConverter.Client.ViewModels"
     Title="Settings"
-    Width="1200"
-    Height="800"
-    Background="#FF15191D"
-    DataContext="{StaticResource SettingsWindowViewModel}"
-    FontSize="11pt"
-    mc:Ignorable="d">
+    Width="1200" Height="800"
+    DataContext="{StaticResource SettingsWindowViewModel}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+ 
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBlock
-            Grid.ColumnSpan="2"
-            Margin="5"
-            Foreground="#FFFFFAF0"
-            Text="Class Mapping:" />
-        <ListBox
-            Grid.Row="1"
-            Margin="5"
-            Background="#0D1117"
-            Grid.IsSharedSizeScope="True"
-            ItemsSource="{Binding SmartClassCollectionView.View}"
-            SelectedItem="{Binding SelectedClassMapping}">
+     
+        <TextBlock Grid.ColumnSpan="2"
+                   Margin="5"
+                   Text="Class Mapping:" />
+ 
+        <ListBox Grid.IsSharedSizeScope="True"
+                 Grid.Row="1"
+                 Margin="5"
+                 ItemsSource="{Binding ClassMappingsView}"
+                 SelectedItem="{Binding SelectedClassMapping}">
             <ListBox.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
-                            <TextBlock
-                                Padding="10"
-                                Background="#FF20262F"
-                                FontWeight="Bold"
-                                Foreground="#FFFFFAF0"
-                                Text="{Binding Path=Name}" />
+                            <TextBlock Padding="10"
+                                       FontWeight="Bold"
+                                       Text="{Binding Path}" />
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
             </ListBox.GroupStyle>
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type vmbase:ClassMapping}">
+                <DataTemplate DataType="{x:Type vm:S3DClassMappingViewModel}">
                     <Grid Margin="4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition SharedSizeGroup="Key" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Foreground="#FFFFFAF0" Text="{Binding SmartClass}" />
-                        <TextBox
-                            Grid.Column="1"
-                            Width="300"
-                            Background="Transparent"
-                            BorderThickness="0,0,0,1"
-                            Foreground="#FFFFFAF0"
-                            IsReadOnly="True"
-                            Text="{Binding IfcClass}" />
+                        <TextBlock Text="{Binding ClassName}" />
+                        <TextBlock Grid.Column="1"
+                                   Width="300"
+                                   Text="{Binding MappedToClassIFC}">
+                        </TextBlock>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Grid Grid.Row="1" Grid.Column="1">
+        
+        <Grid Grid.Row="1"
+              Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
+            
             <WrapPanel>
-                <TextBox
-                    Width="200"
-                    Margin="5"
-                    FontSize="11pt"
-                    Text="" />
+                <TextBox Width="200"
+                         Margin="5"
+                         Text="Search..." />
             </WrapPanel>
-            <TreeView
-                Grid.Row="1"
-                Margin="5"
-                Background="#0D1117"
-                FontSize="13pt"
-                ItemsSource="{Binding IfcClasses}">
+            
+            <TreeView Grid.Row="1"
+                      Margin="5"
+                      ItemsSource="{Binding IfcClasses}">
                 <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type domain:IfcClass}" ItemsSource="{Binding Children}">
-                        <TextBlock Foreground="#FFFFFAF0" Text="{Binding Name}" />
+                    <HierarchicalDataTemplate DataType="{x:Type vm:IfcClassViewModel}"
+                                              ItemsSource="{Binding Inherits}">
+                        <TextBlock Text="{Binding Name}" />
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>
             </TreeView>
-            <TextBox
-                Grid.Row="2"
-                Height="100"
-                Margin="5"
-                Background="#0D1117"
-                FontSize="9pt"
-                Foreground="#FFFFFAF0"
-                IsReadOnly="True"
-                Text="Some paragraphes that can help to explain type usability."
-                TextWrapping="Wrap" />
+            <TextBlock Grid.Row="2"
+                       Height="100"
+                       Margin="5"
+                       FontSize="9pt"
+                       Text="Some paragraphes that can help to explain type usability."
+                       TextWrapping="Wrap" />
         </Grid>
     </Grid>
 </Window>

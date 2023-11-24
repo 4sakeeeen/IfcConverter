@@ -1,0 +1,442 @@
+[
+	{
+		"className": "Structural System",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Системы"
+	},
+	{
+		"className": "Generic System",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Системы"
+	},
+	{
+		"className": "Conduit System",
+		"mappedToClassIFC": "Distribution System",
+		"category": "Системы"
+	},
+	{
+		"className": "Ducting System",
+		"mappedToClassIFC": "Distribution System",
+		"category": "Системы"
+	},
+	{
+		"className": "Electrical System",
+		"mappedToClassIFC": "Distribution System",
+		"category": "Системы"
+	},
+	{
+		"className": "Equipment System",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Системы"
+	},
+	{
+		"className": "Piping System",
+		"mappedToClassIFC": "Distribution System",
+		"category": "Системы"
+	},
+	{
+		"className": "Wall System",
+		"mappedToClassIFC": "Wall",
+		"category": "Системы"
+	},
+	{
+		"className": "Designed Member",
+		"mappedToClassIFC": "Member",
+		"category": "Металлоконструкции"
+	},
+	{
+		"className": "Member System Curve",
+		"mappedToClassIFC": "Member",
+		"category": "Металлоконструкции"
+	},
+	{
+		"className": "Member Part Prismatic",
+		"mappedToClassIFC": "Member",
+		"category": "Металлоконструкции"
+	},
+	{
+		"className": "Handrail",
+		"mappedToClassIFC": "Railing",
+		"category": "Металлоконструкции"
+	},
+	{
+		"className": "Slab",
+		"mappedToClassIFC": "Slab",
+		"category": "Металлоконструкции"
+	},
+	{
+		"className": "Ladder",
+		"mappedToClassIFC": "Stair",
+		"category": "Металлоконструкции"
+	},
+	{
+		"className": "Struct Insulation Spec",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Металлоконструкции"
+	},
+	{
+		"className": "SPS Wall Part",
+		"mappedToClassIFC": "Wall",
+		"category": "Стройка"
+	},
+	{
+		"className": "Stair",
+		"mappedToClassIFC": "Stair",
+		"category": "Стройка"
+	},
+	{
+		"className": "Footing",
+		"mappedToClassIFC": "Footing",
+		"category": "Стройка"
+	},
+	{
+		"className": "Foundation Component",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Стройка"
+	},
+	{
+		"className": "Equipment Foundation",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Стройка"
+	},
+	{
+		"className": "Footing Component",
+		"mappedToClassIFC": "Footing",
+		"category": "Стройка"
+	},
+	{
+		"className": "Designed Equipment",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Оборудование"
+	},
+	{
+		"className": "Equipment Component",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Оборудование"
+	},
+	{
+		"className": "Duct Part",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Component",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Run",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Spool",
+		"mappedToClassIFC": "Flow Terminal",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Along Leg Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Branch Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct End Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Slant Transition Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Split Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Straight Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Surface Mount Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Transition Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Turn Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Duct Turn Transition Feature",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Hvac Nozzle",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Воздуховоды"
+	},
+	{
+		"className": "Conduit Occur",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабелепроводы"
+	},
+	{
+		"className": "Conduit Component",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабелепроводы"
+	},
+	{
+		"className": "Conduit Nozzle",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Кабелепроводы"
+	},
+	{
+		"className": "Conduit Along Leg Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабелепроводы"
+	},
+	{
+		"className": "Conduit Branch Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабелепроводы"
+	},
+	{
+		"className": "Conduit End Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабелепроводы"
+	},
+	{
+		"className": "Conduit Straight Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабелепроводы"
+	},
+	{
+		"className": "Conduit Turn Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабелепроводы"
+	},
+	{
+		"className": "Conduit Run",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабелепроводы"
+	},
+	{
+		"className": "Pipe Part",
+		"mappedToClassIFC": "Flow Controller",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Mechanical Implied Item",
+		"mappedToClassIFC": "Flow Fitting",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Gasket",
+		"mappedToClassIFC": "Flow Fitting",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Instrument",
+		"mappedToClassIFC": "Flow Fitting",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipeline System",
+		"mappedToClassIFC": "Flow Controller",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Nozzle",
+		"mappedToClassIFC": "Flow Moving Device",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Run",
+		"mappedToClassIFC": "Flow Segment",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Specialty Item",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Tap",
+		"mappedToClassIFC": "Flow Moving Device",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Implied Part Occurrence",
+		"mappedToClassIFC": "Flow Fitting",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Along Leg Feature",
+		"mappedToClassIFC": "Flow Controller",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Branch Feature",
+		"mappedToClassIFC": "Flow Controller",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe End Feature",
+		"mappedToClassIFC": "Flow Controller",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Straight Feature",
+		"mappedToClassIFC": "Flow Controller",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Tap Feature",
+		"mappedToClassIFC": "Flow Controller",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Pipe Turn Feature",
+		"mappedToClassIFC": "Flow Controller",
+		"category": "Трубопроводы"
+	},
+	{
+		"className": "Combined Support",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Опоры и подвесы для разных систем"
+	},
+	{
+		"className": "Standard Support Component",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Опоры и подвесы для разных систем"
+	},
+	{
+		"className": "Cable Tray Support",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Опоры и подвесы для разных систем"
+	},
+	{
+		"className": "Conduit Support",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Опоры и подвесы для разных систем"
+	},
+	{
+		"className": "Connection Support Component",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Опоры и подвесы для разных систем"
+	},
+	{
+		"className": "Design Support",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Опоры и подвесы для разных систем"
+	},
+	{
+		"className": "Duct Support",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Опоры и подвесы для разных систем"
+	},
+	{
+		"className": "Logical Support Component",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Опоры и подвесы для разных систем"
+	},
+	{
+		"className": "Pipe Support",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Опоры и подвесы для разных систем"
+	},
+	{
+		"className": "Cableway Slant Transition Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cableway Straight Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cableway Transition Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cableway Turn Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cableway Turn Transition Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cableway",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cableway Along Leg Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cableway Branch Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cableway End Feature",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cable Tray Part",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cable Tray Component",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cable Tray Nozzle",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cable Part",
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cable Run",
+		"mappedToClassIFC": "Flow Segment",
+		"category": "Кабели"
+	},
+	{
+		"className": "Cable Nozzle",
+		"mappedToClassIFC": "Distribution Control Element",
+		"category": "Кабели"
+	},
+	{
+		"className": "Pipe Weld",
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Сварка"
+	}
+]

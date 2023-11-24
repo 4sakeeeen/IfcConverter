@@ -5,7 +5,9 @@
     xmlns:vm="clr-namespace:IfcConverter.Client.ViewModels"
     StartupUri="Windows\MainWindow.xaml">
     <Application.Resources>
-        <vm:MainWindowViewModel x:Key="MainWindowViewModel" />
-        <vm:SettingsWindowViewModel x:Key="SettingsWindowViewModel" />
+        <ResourceDictionary>
+            <vm:MainWindowViewModel x:Key="MainWindowViewModel" />
+            <vm:SettingsWindowViewModel x:Key="SettingsWindowViewModel" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

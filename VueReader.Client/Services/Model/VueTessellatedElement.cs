@@ -6,6 +6,8 @@ using System.Linq;
 using Xbim.Common;
 using Xbim.Ifc4.GeometricModelResource;
 using Xbim.Ifc4.GeometryResource;
+using Xbim.Ifc4.Interfaces;
+using Xbim.Ifc4.PresentationAppearanceResource;
 using Xbim.Ifc4.TopologyResource;
 
 namespace IfcConverter.Client.Services.Model
@@ -20,20 +22,19 @@ namespace IfcConverter.Client.Services.Model
         {
             var postemp = new Position2d();
             tessData.GetStripData(out StripData stripData);
-            this._StripData = stripData;
+            _StripData = stripData;
         }
-
 
         public IfcGeometricRepresentationItem Convert(IModel model)
         {
-            return (eGraphicType)this._StripData.mType switch
+            IfcGeometricRepresentationItem geometricRepresentation = (eGraphicType)_StripData.mType switch
             {
                 eGraphicType.LINE_STRIP => model.Instances.New<IfcPolyline>(polyline =>
                 {
                     polyline.Points.AddRange(
-                        this._StripData.mLineStrip.m_pVertex
+                        _StripData.mLineStrip.m_pVertex
                         .Cast<Position>()
-                        .Select(delegate (Position position)
+                        .Select(position =>
                         {
                             return model.Instances.New<IfcCartesianPoint>(point =>
                             {
@@ -45,9 +46,9 @@ namespace IfcConverter.Client.Services.Model
                 {
                     brep.Outer = model.Instances.New<IfcClosedShell>(shell =>
                     {
-                        IEnumerable<Position> vertices = this._StripData.mTriStrip.m_pVertex.Cast<Position>();
+                        IEnumerable<Position> vertices = _StripData.mTriStrip.m_pVertex.Cast<Position>();
 
-                        foreach (IEnumerable<int> triangleByIndices in Chunk(this._StripData.mTriStrip.m_pVertexIndex.Cast<int>(), 3))
+                        foreach (IEnumerable<int> triangleByIndices in Chunk(_StripData.mTriStrip.m_pVertexIndex.Cast<int>(), 3))
                         {
                             if (triangleByIndices.Count() != 3) { throw new Exception("Tessellated triangle indices counts failed"); }
                             shell.CfsFaces.Add(model.Instances.New<IfcFace>(face =>
@@ -79,6 +80,42 @@ namespace IfcConverter.Client.Services.Model
                 }),
                 _ => throw new Exception("Invalid strip data")
             };
+
+            IfcPresentationStyle style = (eGraphicType)_StripData.mType switch
+            {
+                eGraphicType.LINE_STRIP => model.Instances.New<IfcCurveStyle>(curveStyle =>
+                {
+                    curveStyle.CurveColour = model.Instances.New<IfcColourRgb>(color =>
+                    {
+                        color.Red = 1;
+                        color.Green = 1;
+                        color.Blue = 1;
+                    });
+                }),
+                eGraphicType.TRIANGLE_STRIP => model.Instances.New<IfcSurfaceStyle>(surfaceStyle =>
+                {
+                    surfaceStyle.Side = IfcSurfaceSide.BOTH;
+                    surfaceStyle.Styles.Add(model.Instances.New<IfcSurfaceStyleRendering>(rendering =>
+                    {
+                        rendering.Transparency = 0.5;
+                        rendering.SurfaceColour = model.Instances.New<IfcColourRgb>(color =>
+                        {
+                            color.Red = 51.0 / 255;
+                            color.Green = 145.0 / 255;
+                            color.Blue = 128.0 / 255;
+                        });
+                    }));
+                }),
+                _ => throw new Exception("Style error")
+            };
+
+            model.Instances.New<IfcStyledItem>(styled =>
+            {
+                styled.Item = geometricRepresentation;
+                styled.Styles.Add(style);
+            });
+
+            return geometricRepresentation;
         }
 
         private static IEnumerable<IEnumerable<T>> Chunk<T>(IEnumerable<T> items, int chunkSize)

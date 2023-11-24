@@ -1,112 +1,143 @@
 ﻿using IfcConverter.Client.Services;
 using IfcConverter.Client.Services.Model;
+using IfcConverter.Client.ViewModels.Base;
 using IfcConverter.Client.Windows;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Serilog;
-using Serilog.Core;
+using Xbim.Ifc4.PresentationAppearanceResource;
+using Xbim.Ifc4.RepresentationResource;
 
 namespace IfcConverter.Client.ViewModels
 {
-    internal sealed class MainWindowViewModel : Base.ViewModel
+    internal sealed class MainWindowViewModel : ViewModel
     {
-        private string _AuthorProduct = string.Empty;
+        private VueFile? _VueFile = null;
 
-        private Logger _Logger = new LoggerConfiguration().WriteTo.File("logs\\common.log", rollingInterval: RollingInterval.Day).CreateLogger();
+        private string? _AuthorProduct;
 
-        public string AuthorProduct
+        public string? AuthorProduct
         {
-            get => this._AuthorProduct;
-            set => this.SetProperty(ref this._AuthorProduct, value);
+            get { return _AuthorProduct; }
+            set { _ = SetProperty(ref _AuthorProduct, value); }
         }
 
+        private string? _SorceFileName;
 
-        private string _SorceFileName = string.Empty;
-
-        public string SorceFileName
+        public string? SorceFileName
         {
-            get => this._SorceFileName;
-            set => this.SetProperty(ref this._SorceFileName, value);
+            get { return _SorceFileName; }
+            set { _ = SetProperty(ref _SorceFileName, value); }
         }
 
+        private string? _ViewerProduct;
 
-        private string _ViewerProduct = string.Empty;
-
-        public string ViewerProduct
+        public string? ViewerProduct
         {
-            get => this._ViewerProduct;
-            set => this.SetProperty(ref this._ViewerProduct, value);
+            get { return _ViewerProduct; }
+            set { SetProperty(ref _ViewerProduct, value); }
         }
 
+        private string? _FileMajorVersion;
 
-        private string _FileMajorVersion = string.Empty;
-
-        public string FileMajorVersion
+        public string? FileMajorVersion
         {
-            get => this._FileMajorVersion;
-            set => this.SetProperty(ref this._FileMajorVersion, value);
+            get { return _FileMajorVersion; }
+            set { _ = SetProperty(ref _FileMajorVersion, value); }
         }
 
+        private string? _FileMinorVersion;
 
-        private string _FileMinorVersion = string.Empty;
-
-        public string FileMinorVersion
+        public string? FileMinorVersion
         {
-            get => this._FileMinorVersion;
-            set => this.SetProperty(ref this._FileMinorVersion, value);
+            get { return _FileMinorVersion; }
+            set { _ = SetProperty(ref _FileMinorVersion, value); }
         }
 
+        private ObservableCollection<VueHierarchyElement>? _ProductTreeItems;
 
-        public ObservableCollection<ProductTreeItem> ProductTreeItems { get; set; } = new();
-
+        public ObservableCollection<VueHierarchyElement>? ProductTreeItems
+        {
+            get { return _ProductTreeItems; }
+            set { _ = SetProperty(ref _ProductTreeItems, value); }
+        }
 
         public ICommand UploadModelCommand
         {
-            get => new RelayCommand(() =>
+            get { return new RelayCommandAsync(Upload, (ex) => App.Logger.Error(ex, "Upload vue file error")); }
+        }
+
+        public ICommand OpenSettingsCommand
+        {
+            get
+            {
+                return new RelayCommand<Window>((owner) =>
+                {
+                    var win = new SettingsWindow { Owner = owner };
+                    win.ShowDialog();
+                });
+            }
+        }
+
+        public ICommand PerformConvertionCommand
+        {
+            get { return new RelayCommandAsync(PerformConvertion, (ex) => App.Logger.Error(ex, "Convertion error")); }
+        }
+
+        private async Task Upload()
+        {
+            await Task.Run(() =>
             {
                 var ofd = new OpenFileDialog { Filter = "VUE files (*.vue)|*.vue" };
                 if (ofd.ShowDialog() == true)
                 {
                     try
                     {
-                        var vueFile = new VueFile(ofd.FileName, tessellationTolerance: 20);
-                        this.AuthorProduct = vueFile.AuthorProduct;
-                        this.SorceFileName = vueFile.SorceFileName;
-                        this.ViewerProduct = vueFile.ViewerProduct;
-                        this.FileMajorVersion = vueFile.FileMajorVersion;
-                        this.FileMinorVersion = vueFile.FileMinorVersion;
-                        vueFile.SaveToIfc(projectName: this.SorceFileName, "C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\TestEnv.ifc");
-                        // ProductTreeItems.Add(vueFile.GenerateTreeViewContextItems() ?? throw new Exception());
+                        _VueFile = new VueFile(ofd.FileName, tessellationTolerance: 20);
+                        ProductTreeItems = new ObservableCollection<VueHierarchyElement>(_VueFile.Hierarchy.RootElements);
+                        AuthorProduct = _VueFile.AuthorProduct;
+                        SorceFileName = _VueFile.SorceFileName;
+                        ViewerProduct = _VueFile.ViewerProduct;
+                        FileMajorVersion = _VueFile.FileMajorVersion;
+                        FileMinorVersion = _VueFile.FileMinorVersion;
                     }
                     catch (Exception ex)
                     {
-                        _Logger.Error(new Exception("Upload command failed", ex), "Upload vue file error");
-                    }
-                    finally
-                    {
-                        MessageBox.Show("Finished");
+                        throw new Exception("Upload command failed", ex);
                     }
                 }
             });
         }
 
-
-        public ICommand OpenSettingsCommand
+        private async Task PerformConvertion()
         {
-            get => new RelayCommand<Window>((owner) =>
+            await Task.Run(() =>
             {
-                var win = new SettingsWindow { Owner = owner };
-                win.ShowDialog();
+                _VueFile?.SaveToIfc(projectName: SorceFileName ?? "Nonamed Project", "C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\TestEnv.ifc");
             });
         }
 
-
-        public MainWindowViewModel()
+        private IEnumerable<VueHierarchyElement> GetSelectedItems(IEnumerable<VueHierarchyElement> items)
         {
-            new LoggerConfiguration().CreateLogger();
+            var result = new List<VueHierarchyElement>();
+            
+            foreach (VueHierarchyElement item in items)
+            {
+                if (item.IsSelected)
+                {
+                    result.Add(item);
+                }
+                else
+                {
+                    result.AddRange(GetSelectedItems(item.HierarchyItems));
+                }
+            }
+
+            return result;
         }
     }
 }

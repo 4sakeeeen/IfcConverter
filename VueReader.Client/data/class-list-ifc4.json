@@ -1,0 +1,742 @@
+[
+	{
+		"name": "Proxy",
+		"inherits": []
+	},
+	{
+		"name": "Annotation",
+		"inherits": []
+	},
+	{
+		"name": "Element",
+		"inherits": [
+			{
+				"name": "Civil Element",
+				"inherits": []
+			},
+			{
+				"name": "Distribution Element",
+				"inherits": [
+					{
+						"name": "Distribution Control Element",
+						"inherits": [
+							{
+								"name": "Actuator",
+								"inherits": []
+							},
+							{
+								"name": "Alarm",
+								"inherits": []
+							},
+							{
+								"name": "Controller",
+								"inherits": []
+							},
+							{
+								"name": "Flow Instrument",
+								"inherits": []
+							},
+							{
+								"name": "Sensor",
+								"inherits": []
+							},
+							{
+								"name": "Unitary Control Element",
+								"inherits": []
+							},
+							{
+								"name": "Protective Device Tripping Unit",
+								"inherits": []
+							}
+						]
+					},
+					{
+						"name": "Distribution Flow Element",
+						"inherits": [
+							{
+								"name": "Distribution Chamber Element",
+								"inherits": []
+							},
+							{
+								"name": "Energy Conversion Device",
+								"inherits": [
+									{
+										"name": "Electric Generator",
+										"inherits": []
+									},
+									{
+										"name": "Electric Motor",
+										"inherits": []
+									},
+									{
+										"name": "Motor Connection",
+										"inherits": []
+									},
+									{
+										"name": "Solar Device",
+										"inherits": []
+									},
+									{
+										"name": "Transformer",
+										"inherits": []
+									},
+									{
+										"name": "Air To Air Heat Recovery",
+										"inherits": []
+									},
+									{
+										"name": "Boiler",
+										"inherits": []
+									},
+									{
+										"name": "Burner",
+										"inherits": []
+									},
+									{
+										"name": "Chiller",
+										"inherits": []
+									},
+									{
+										"name": "Coil",
+										"inherits": []
+									},
+									{
+										"name": "Condenser",
+										"inherits": []
+									},
+									{
+										"name": "Cooled Beam",
+										"inherits": []
+									},
+									{
+										"name": "Cooling Tower",
+										"inherits": []
+									},
+									{
+										"name": "Engine",
+										"inherits": []
+									},
+									{
+										"name": "Evaporative Cooler",
+										"inherits": []
+									},
+									{
+										"name": "Evaporator",
+										"inherits": []
+									},
+									{
+										"name": "Heat Exchanger",
+										"inherits": []
+									},
+									{
+										"name": "Humidifier",
+										"inherits": []
+									},
+									{
+										"name": "Tube Bundle",
+										"inherits": []
+									},
+									{
+										"name": "Unitary Equipment",
+										"inherits": []
+									}
+								]
+							},
+							{
+								"name": "Flow Controller",
+								"inherits": [
+									{
+										"name": "Electric Distribution Board",
+										"inherits": []
+									},
+									{
+										"name": "Electric Time Control",
+										"inherits": []
+									},
+									{
+										"name": "Protective Device",
+										"inherits": []
+									},
+									{
+										"name": "Switching Device",
+										"inherits": []
+									},
+									{
+										"name": "Air Terminal Box",
+										"inherits": []
+									},
+									{
+										"name": "Damper",
+										"inherits": []
+									},
+									{
+										"name": "Flow Meter",
+										"inherits": []
+									},
+									{
+										"name": "Valve",
+										"inherits": []
+									}
+								]
+							},
+							{
+								"name": "Flow Fitting",
+								"inherits": [
+									{
+										"name": "Cable Carrier Fitting",
+										"inherits": []
+									},
+									{
+										"name": "Cable Fitting",
+										"inherits": []
+									},
+									{
+										"name": "Junction Box",
+										"inherits": []
+									},
+									{
+										"name": "Duct Fitting",
+										"inherits": []
+									},
+									{
+										"name": "Pipe Fitting",
+										"inherits": []
+									}
+								]
+							},
+							{
+								"name": "Flow Moving Device",
+								"inherits": [
+									{
+										"name": "Compressor",
+										"inherits": []
+									},
+									{
+										"name": "Fan",
+										"inherits": []
+									},
+									{
+										"name": "Pump",
+										"inherits": []
+									}
+								]
+							},
+							{
+								"name": "Flow Segment",
+								"inherits": [
+									{
+										"name": "Cable Carrier Segment",
+										"inherits": []
+									},
+									{
+										"name": "Cable Segment",
+										"inherits": []
+									},
+									{
+										"name": "Duct Segment",
+										"inherits": []
+									},
+									{
+										"name": "Pipe Segment",
+										"inherits": []
+									}
+								]
+							},
+							{
+								"name": "Flow Storage Device",
+								"inherits": [
+									{
+										"name": "Electric Flow Storage Device",
+										"inherits": []
+									},
+									{
+										"name": "Tank",
+										"inherits": []
+									}
+								]
+							},
+							{
+								"name": "Flow Terminal",
+								"inherits": [
+									{
+										"name": "Audio Visual Appliance",
+										"inherits": []
+									},
+									{
+										"name": "Communications Appliance",
+										"inherits": []
+									},
+									{
+										"name": "Electric App liance",
+										"inherits": []
+									},
+									{
+										"name": "Lamp",
+										"inherits": []
+									},
+									{
+										"name": "Light Fixture",
+										"inherits": []
+									},
+									{
+										"name": "Outlet",
+										"inherits": []
+									},
+									{
+										"name": "Air Terminal",
+										"inherits": []
+									},
+									{
+										"name": "Medical Device",
+										"inherits": []
+									},
+									{
+										"name": "Space Heater",
+										"inherits": []
+									},
+									{
+										"name": "Fire Suppression Terminal",
+										"inherits": []
+									},
+									{
+										"name": "Sanitary Terminal",
+										"inherits": []
+									},
+									{
+										"name": "Stack Terminal",
+										"inherits": []
+									},
+									{
+										"name": "Waste Terminal",
+										"inherits": []
+									}
+								]
+							},
+							{
+								"name": "Flow Treatment Device",
+								"inherits": [
+									{
+										"name": "Duct Silencer",
+										"inherits": []
+									},
+									{
+										"name": "Filter",
+										"inherits": []
+									},
+									{
+										"name": "Interceptor",
+										"inherits": []
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "Element Assembly",
+				"inherits": []
+			},
+			{
+				"name": "Building Element",
+				"inherits": [
+					{
+						"name": "Beam",
+						"inherits": []
+					},
+					{
+						"name": "Beam Standard Case",
+						"inherits": []
+					},
+					{
+						"name": "Building Element Proxy",
+						"inherits": []
+					},
+					{
+						"name": "Chimney",
+						"inherits": []
+					},
+					{
+						"name": "Column",
+						"inherits": []
+					},
+					{
+						"name": "Column Standard Case",
+						"inherits": []
+					},
+					{
+						"name": "Covering",
+						"inherits": []
+					},
+					{
+						"name": "Curtain Wall",
+						"inherits": []
+					},
+					{
+						"name": "Door",
+						"inherits": []
+					},
+					{
+						"name": "Door Standard Case",
+						"inherits": []
+					},
+					{
+						"name": "Member",
+						"inherits": []
+					},
+					{
+						"name": "Member Standard Case",
+						"inherits": []
+					},
+					{
+						"name": "Plate",
+						"inherits": []
+					},
+					{
+						"name": "Plate Standard Case",
+						"inherits": []
+					},
+					{
+						"name": "Railing",
+						"inherits": []
+					},
+					{
+						"name": "Ramp",
+						"inherits": []
+					},
+					{
+						"name": "Ramp Flight",
+						"inherits": []
+					},
+					{
+						"name": "Roof",
+						"inherits": []
+					},
+					{
+						"name": "Shading Device",
+						"inherits": []
+					},
+					{
+						"name": "Slab",
+						"inherits": []
+					},
+					{
+						"name": "Slab Elemented Case",
+						"inherits": []
+					},
+					{
+						"name": "Slab Standard Case",
+						"inherits": []
+					},
+					{
+						"name": "Stair",
+						"inherits": []
+					},
+					{
+						"name": "Stair Flight",
+						"inherits": []
+					},
+					{
+						"name": "Wall",
+						"inherits": []
+					},
+					{
+						"name": "Wall Elemented Case",
+						"inherits": []
+					},
+					{
+						"name": "Wall Standard Case",
+						"inherits": []
+					},
+					{
+						"name": "Window",
+						"inherits": []
+					},
+					{
+						"name": "Window Standard Case",
+						"inherits": []
+					},
+					{
+						"name": "Footing",
+						"inherits": []
+					},
+					{
+						"name": "Pile",
+						"inherits": []
+					}
+				]
+			},
+			{
+				"name": "Feature Element",
+				"inherits": [
+					{
+						"name": "Feature Element Addition",
+						"inherits": [
+							{
+								"name": "Projection Element",
+								"inherits": []
+							}
+						]
+					},
+					{
+						"name": "Feature Element Subtraction",
+						"inherits": [
+							{
+								"name": "Opening Element",
+								"inherits": [
+									{
+										"name": "Opening Standard Case",
+										"inherits": []
+									}
+								]
+							},
+							{
+								"name": "Voiding Feature",
+								"inherits": []
+							}
+						]
+					},
+					{
+						"name": "Surface Feature",
+						"inherits": []
+					}
+				]
+			},
+			{
+				"name": "Furnishing Element",
+				"inherits": [
+					{
+						"name": "Furniture",
+						"inherits": []
+					},
+					{
+						"name": "System Furniture Element",
+						"inherits": []
+					}
+				]
+			},
+			{
+				"name": "Geographic Element",
+				"inherits": []
+			},
+			{
+				"name": "Transport Element",
+				"inherits": []
+			},
+			{
+				"name": "Virtual Element",
+				"inherits": []
+			},
+			{
+				"name": "Element Component",
+				"inherits": [
+					{
+						"name": "Vibration Isolator",
+						"inherits": []
+					},
+					{
+						"name": "Building Element Part",
+						"inherits": []
+					},
+					{
+						"name": "Discrete Accessory",
+						"inherits": []
+					},
+					{
+						"name": "Fastener",
+						"inherits": []
+					},
+					{
+						"name": "Mechanical Fastener",
+						"inherits": []
+					},
+					{
+						"name": "Reinforcing Element",
+						"inherits": [
+							{
+								"name": "Reinforcing Bar",
+								"inherits": []
+							},
+							{
+								"name": "Reinforcing Mesh",
+								"inherits": []
+							},
+							{
+								"name": "Tendon",
+								"inherits": []
+							},
+							{
+								"name": "Tendon Anchor",
+								"inherits": []
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "Grid",
+		"inherits": []
+	},
+	{
+		"name": "Port",
+		"inherits": [
+			{
+				"name": "Distribution Port",
+				"inherits": []
+			}
+		]
+	},
+	{
+		"name": "Positioning Element",
+		"inherits": [
+			{
+				"name": "Linear Positioning Element",
+				"inherits": [
+					{
+						"name": "Alignment",
+						"inherits": []
+					}
+				]
+			},
+			{
+				"name": "Referent",
+				"inherits": []
+			}
+		]
+	},
+	{
+		"name": "Spatial Element",
+		"inherits": [
+			{
+				"name": "External Spatial Structure Element",
+				"inherits": [
+					{
+						"name": "External Spatial Element",
+						"inherits": []
+					}
+				]
+			},
+			{
+				"name": "Spatial Structure Element",
+				"inherits": [
+					{
+						"name": "Building",
+						"inherits": []
+					},
+					{
+						"name": "Building Storey",
+						"inherits": []
+					},
+					{
+						"name": "Site",
+						"inherits": []
+					},
+					{
+						"name": "Space",
+						"inherits": []
+					}
+				]
+			},
+			{
+				"name": "Spatial Zone",
+				"inherits": []
+			}
+		]
+	},
+	{
+		"name": "Structural Activity",
+		"inherits": [
+			{
+				"name": "Structural Action",
+				"inherits": [
+					{
+						"name": "Structural Curve Action",
+						"inherits": [
+							{
+								"name": "Structural Linear Action",
+								"inherits": []
+							}
+						]
+					},
+					{
+						"name": "Structural Point Action",
+						"inherits": []
+					},
+					{
+						"name": "Structural Surface Action",
+						"inherits": [
+							{
+								"name": "Structural Planar Action",
+								"inherits": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "Structural Reaction",
+				"inherits": [
+					{
+						"name": "Structural Curve Reaction",
+						"inherits": []
+					},
+					{
+						"name": "Structural Point Reaction",
+						"inherits": []
+					},
+					{
+						"name": "Structural Surface Reaction",
+						"inherits": []
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "Structural Item",
+		"inherits": [
+			{
+				"name": "Structural Connection",
+				"inherits": [
+					{
+						"name": "Structural Curve Connection",
+						"inherits": []
+					},
+					{
+						"name": "Structural Point Connection",
+						"inherits": []
+					},
+					{
+						"name": "Structural Surface Connection",
+						"inherits": []
+					}
+				]
+			},
+			{
+				"name": "Structural Member",
+				"inherits": [
+					{
+						"name": "Structural Curve Member",
+						"inherits": [
+							{
+								"name": "Structural Curve Member Varying",
+								"inherits": []
+							}
+						]
+					},
+					{
+						"name": "Structural Surface Member",
+						"inherits": [
+							{
+								"name": "Structural Surface Member Varying",
+								"inherits": []
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

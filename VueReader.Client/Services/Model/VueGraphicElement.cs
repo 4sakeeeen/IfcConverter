@@ -1,11 +1,21 @@
-﻿using IngrDataReadLib;
+﻿using IfcConverter.Client.Services.Model.Base;
+using IngrDataReadLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xbim.Common;
+using Xbim.Ifc4.GeometricConstraintResource;
+using Xbim.Ifc4.GeometryResource;
+using Xbim.Ifc4.Kernel;
+using Xbim.Ifc4.MeasureResource;
+using Xbim.Ifc4.ProductExtension;
+using Xbim.Ifc4.PropertyResource;
+using Xbim.Ifc4.RepresentationResource;
+using Xbim.Ifc4.SharedBldgElements;
 
 namespace IfcConverter.Client.Services.Model
 {
-    public sealed class VueGraphicElement
+    public sealed class VueGraphicElement : IConvertable<IfcElement>
     {
         public Dictionary<string, string> Attributes { get; } = new();
 
@@ -31,7 +41,7 @@ namespace IfcConverter.Client.Services.Model
             IngrGeom geometry,
             RdMaterialProperties materialProperties)
         {
-            this.Attributes = new Dictionary<string, string>(
+            Attributes = new Dictionary<string, string>(
                 rawProperties
                 .Cast<string>()
                 .Select(delegate (string rawProperty)
@@ -48,14 +58,44 @@ namespace IfcConverter.Client.Services.Model
                 {
                     return x.First();
                 }));
-            this.Linkage = linkage;
-            this.Moniker = moniker;
-            this.SPFUID = spfuid;
-            this.GeometryGroup = graphicType switch
+            Linkage = linkage;
+            Moniker = moniker;
+            SPFUID = spfuid;
+            GeometryGroup = graphicType switch
             {
                 eGraphicType.GROUP_TYPE => new VueGroup((IRdGroup)geometry),
                 _ => throw new NotImplementedException("Graphic type GROUP_TYPE not encountered for a convertable element."),
             };
+        }
+
+        public IfcElement Convert(IModel model)
+        {
+            var member = model.Instances.New<IfcMember>();
+            member.Name = Attributes["Name"];
+            member.Representation = model.Instances.New<IfcProductDefinitionShape>();
+            member.Representation.Representations.AddRange(GeometryGroup.Convert(model));
+            member.ObjectPlacement = model.Instances.New<IfcLocalPlacement>(
+                placement => placement.RelativePlacement = model.Instances.New<IfcAxis2Placement3D>(
+                    axis3d => axis3d.Location = model.Instances.New<IfcCartesianPoint>(
+                        point => point.SetXYZ(0, 0, 0))));
+
+            var propertySet = model.Instances.New<IfcPropertySet>();
+            propertySet.Name = "Smart Plant 3D";
+            propertySet.HasProperties.AddRange(Attributes.Select(
+                attrib => model.Instances.New<IfcPropertySingleValue>(property =>
+                {
+                    property.Name = attrib.Key;
+                    property.NominalValue = new IfcText(attrib.Value);
+                })
+            ));
+
+            model.Instances.New<IfcRelDefinesByProperties>(definesByProperties =>
+            {
+                definesByProperties.RelatedObjects.Add(member);
+                definesByProperties.RelatingPropertyDefinition = propertySet;
+            });
+
+            return member;
         }
     }
 }

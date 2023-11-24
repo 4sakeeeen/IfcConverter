@@ -1,15 +1,18 @@
 ﻿using IfcConverter.Client.Services.Model.Base;
 using IngrDataReadLib;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using Xbim.Common;
+using Xbim.Ifc4.GeometricModelResource;
 using Xbim.Ifc4.GeometryResource;
+using Xbim.Ifc4.PresentationAppearanceResource;
 using Xbim.Ifc4.RepresentationResource;
 
 namespace IfcConverter.Client.Services.Model
 {
-    public sealed class VueGroup : IConvertable<IfcShapeRepresentation>
+    public sealed class VueGroup : IConvertable<IEnumerable<IfcShapeRepresentation>>
     {
         private readonly List<VueGeometryElement> _GeometryElements = new();
 
@@ -29,7 +32,7 @@ namespace IfcConverter.Client.Services.Model
                 {
                     if (geometry is IRdTessData tessData)
                     {
-                        this._GeometryElements.Add(new VueTessellatedElement(aspectNo, i, tessData));
+                        _GeometryElements.Add(new VueTessellatedElement(aspectNo, i, tessData));
                     }
                     else
                     {
@@ -71,18 +74,25 @@ namespace IfcConverter.Client.Services.Model
         }
 
 
-        public IfcShapeRepresentation Convert(IModel model)
+        public IEnumerable<IfcShapeRepresentation> Convert(IModel model)
         {
-            return model.Instances.New(delegate (IfcShapeRepresentation representation)
+            foreach (IGrouping<Type, IfcGeometricRepresentationItem> geometryGroupByType in _GeometryElements
+                .Select(elem => ((IConvertable<IfcGeometricRepresentationItem>)elem).Convert(model))
+                .GroupBy(elem => elem.GetType()))
             {
+                var representation = model.Instances.New<IfcShapeRepresentation>();
+                representation.Items.AddRange(geometryGroupByType);
                 representation.ContextOfItems = model.Instances.OfType<IfcGeometricRepresentationContext>().FirstOrDefault();
-                representation.RepresentationType = "SolidModel";
                 representation.RepresentationIdentifier = "Body";
-                this._GeometryElements.ForEach(delegate (VueGeometryElement convertable)
+                representation.RepresentationType = geometryGroupByType.Key.Name switch
                 {
-                    representation.Items.Add(((IConvertable<IfcGeometricRepresentationItem>)convertable).Convert(model));
-                });
-            });
+                    "IfcPolyline" => "Curve3D",
+                    "IfcFacetedBrep" => "Brep",
+                    _ => throw new Exception($"Type {geometryGroupByType.Key.Name} invalid for converting to shape representation.")
+                };
+
+                yield return representation;
+            }
         }
     }
 }

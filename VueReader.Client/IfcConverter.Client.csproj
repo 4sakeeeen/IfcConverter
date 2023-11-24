@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Xbim.Essentials" Version="5.1.341" />
@@ -27,6 +28,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VueReader.Domain\IfcConverter.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="data\class-list-ifc4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data\class-mapping.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,19 +1,29 @@
-﻿using IfcConverter.Domain.Models;
-using System.Collections.Generic;
+﻿using IfcConverter.Client.ViewModels.Base;
+using IfcConverter.Domain.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Data;
 
-namespace IfcConverter.Client.ViewModels.Base
+namespace IfcConverter.Client.ViewModels
 {
-    internal class ClassMapping : ViewModel
+    public class S3DClassMappingViewModel : ViewModel
     {
-        public string SmartCategory { get; set; }
+        private readonly S3DClassMapping _ClassMapping;
 
-        public string SmartClass { get; set; }
+        public string Category
+        {
+            get { return _ClassMapping.Caterory; }
+        }
 
-        public string IfcClass { get; set; }
+        public string ClassName
+        {
+            get { return _ClassMapping.ClassName; }
+        }
+
+        public string MappedToClassIFC
+        {
+            get { return _ClassMapping.MappedClassIFC; }
+        }
 
 
         private IfcClass? _SelectedValue;
@@ -35,9 +45,9 @@ namespace IfcConverter.Client.ViewModels.Base
 
                 };
                 
-                if (this.SelectedValue != null)
+                if (SelectedValue != null)
                 {
-                    view.Source = new ObservableCollection<IfcClass>(ifcClasses.Where(x => x.Name.Contains(this.SelectedValue.Name)));                    
+                    view.Source = new ObservableCollection<IfcClass>(ifcClasses.Where(x => x.Name.Contains(SelectedValue.Name)));                    
                 }
                 else
                 {
@@ -48,11 +58,9 @@ namespace IfcConverter.Client.ViewModels.Base
             }
         }
 
-        public ClassMapping(string smartClass, string ifcClass, string smartCategory)
+        public S3DClassMappingViewModel(S3DClassMapping classMapping)
         {
-            this.SmartClass = smartClass;
-            this.IfcClass = ifcClass;
-            this.SmartCategory = smartCategory;
+            _ClassMapping = classMapping;
         }
     }
 }
