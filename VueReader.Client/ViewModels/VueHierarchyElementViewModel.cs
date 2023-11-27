@@ -1,11 +1,12 @@
-﻿using IfcConverter.Client.Services.Model;
+﻿using IfcConverter.Client.Services;
+using IfcConverter.Client.Services.Model.Base;
 using IfcConverter.Client.ViewModels.Base;
 using System.Collections.Generic;
 using System.Windows.Input;
 
-namespace IfcConverter.Client.Services
+namespace IfcConverter.Client.ViewModels
 {
-    public sealed class VueHierarchyElement : ViewModel
+    public sealed class VueHierarchyElementViewModel : ViewModel
     {
         public string Name { get; }
 
@@ -13,9 +14,9 @@ namespace IfcConverter.Client.Services
 
         public VueGraphicElement? GraphicElement { get; }
 
-        public VueHierarchyElement? Parent { get; }
+        public VueHierarchyElementViewModel? Parent { get; }
 
-        public List<VueHierarchyElement> HierarchyItems { get; } = new();
+        public List<VueHierarchyElementViewModel> HierarchyItems { get; } = new();
 
         private bool _isSelected;
 
@@ -34,17 +35,17 @@ namespace IfcConverter.Client.Services
             get { return new RelayCommand(() => IsSelected ^= true); }
         }
 
-        public VueHierarchyElement(string name, string path, VueHierarchyElement? parent = null, VueGraphicElement? graphicElement = null)
+        public VueHierarchyElementViewModel(string name, string path, VueHierarchyElementViewModel? parent = null, VueGraphicElement? graphicElement = null)
         {
-            this.Name = name;
-            this.Path = path;
-            this.Parent = parent;
-            this.GraphicElement = graphicElement;
+            Name = name;
+            Path = path;
+            Parent = parent;
+            GraphicElement = graphicElement;
         }
 
-        private void SelectAllChildren(IEnumerable<VueHierarchyElement> children, bool isSelected)
+        private void SelectAllChildren(IEnumerable<VueHierarchyElementViewModel> children, bool isSelected)
         {
-            foreach (VueHierarchyElement child in children)
+            foreach (VueHierarchyElementViewModel child in children)
             {
                 child.IsSelected = isSelected;
                 SelectAllChildren(child.HierarchyItems, isSelected);

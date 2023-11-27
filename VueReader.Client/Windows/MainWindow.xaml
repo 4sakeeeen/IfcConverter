@@ -55,7 +55,7 @@
             Grid.Row="1" Grid.RowSpan="2"
             ItemsSource="{Binding ProductTreeItems}">
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type service:VueHierarchyElement}"
+                <HierarchicalDataTemplate DataType="{x:Type service:VueHierarchyElementViewModel}"
                                           ItemsSource="{Binding HierarchyItems}">
                     <TextBlock Text="{Binding Name}" />
                 </HierarchicalDataTemplate>

@@ -1,5 +1,4 @@
-﻿using IfcConverter.Client.Services.Model.Base;
-using IngrDataReadLib;
+﻿using IngrDataReadLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ using Xbim.Ifc4.PropertyResource;
 using Xbim.Ifc4.RepresentationResource;
 using Xbim.Ifc4.SharedBldgElements;
 
-namespace IfcConverter.Client.Services.Model
+namespace IfcConverter.Client.Services.Model.Base
 {
     public sealed class VueGraphicElement : IConvertable<IfcElement>
     {

@@ -73,9 +73,9 @@ namespace IfcConverter.Client.ViewModels
             set { SetProperty(ref _IsLoading, value); }
         }
 
-        private ObservableCollection<VueHierarchyElement>? _ProductTreeItems;
+        private ObservableCollection<VueHierarchyElementViewModel>? _ProductTreeItems;
 
-        public ObservableCollection<VueHierarchyElement>? ProductTreeItems
+        public ObservableCollection<VueHierarchyElementViewModel>? ProductTreeItems
         {
             get { return _ProductTreeItems; }
             set { _ = SetProperty(ref _ProductTreeItems, value); }
@@ -115,7 +115,7 @@ namespace IfcConverter.Client.ViewModels
                         IsLoading = true;
                         ProgressText = "Reading vue file...";
                         _VueFile = new VueFile(ofd.FileName, tessellationTolerance: 20);
-                        ProductTreeItems = new ObservableCollection<VueHierarchyElement>(_VueFile.Hierarchy.RootElements);
+                        ProductTreeItems = new ObservableCollection<VueHierarchyElementViewModel>(_VueFile.Hierarchy.RootElements);
                         AuthorProduct = _VueFile.AuthorProduct;
                         SorceFileName = _VueFile.SorceFileName;
                         ViewerProduct = _VueFile.ViewerProduct;
@@ -157,11 +157,11 @@ namespace IfcConverter.Client.ViewModels
             });
         }
 
-        private IEnumerable<VueHierarchyElement> GetSelectedItems(IEnumerable<VueHierarchyElement> items)
+        private IEnumerable<VueHierarchyElementViewModel> GetSelectedItems(IEnumerable<VueHierarchyElementViewModel> items)
         {
-            var result = new List<VueHierarchyElement>();
+            var result = new List<VueHierarchyElementViewModel>();
             
-            foreach (VueHierarchyElement item in items)
+            foreach (VueHierarchyElementViewModel item in items)
             {
                 if (item.IsSelected)
                 {
