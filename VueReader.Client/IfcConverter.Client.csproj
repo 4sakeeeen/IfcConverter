@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Controls\Controls.csproj" />
     <ProjectReference Include="..\VueReader.Domain\IfcConverter.Domain.csproj" />
   </ItemGroup>
 

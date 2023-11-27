@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Xbim.Common;
 using Xbim.Common.ExpressValidation;
 using Xbim.Common.Step21;
@@ -65,7 +66,7 @@ namespace IfcConverter.Client.Services.Model
                     reader.GetCurrentGraphicIdentifier(out string linkage, out string moniker, out string spfuid);
                     reader.GetCurrentGraphicElement(out eGraphicType gtype, ref geometry, ref materialProperties, out errorCode);
                     reader.GetNextGraphicElement(out errorCode);
-                    GraphicElements.Add(new VueGraphicElement(propertyArray, linkage, moniker, spfuid, gtype, geometry, materialProperties));
+                    GraphicElements.Add(new VueGraphicElement(propertyArray, linkage, moniker, spfuid, gtype, geometry));
                 }
 
                 reader.CloseVueFile();
@@ -98,10 +99,10 @@ namespace IfcConverter.Client.Services.Model
                 XbimSchemaVersion.Ifc4,
                 XbimStoreType.InMemoryModel);
 
+            using ITransaction transaction = _Model.BeginTransaction("Create IFC file");
+            
             try
             {
-                using ITransaction transaction = _Model.BeginTransaction("Create IFC file");
-
                 var project = _Model.Instances.New<IfcProject>();
                 project.Name = $"{projectName}: Project";
                 project.Initialize(ProjectUnits.SIUnitsUK);
@@ -139,7 +140,13 @@ namespace IfcConverter.Client.Services.Model
 
                 Hierarchy.Root = buildingStorey;
                 Hierarchy.Convert(_Model);
-
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Convert and save to IFC failed", ex);
+            }
+            finally
+            {
                 var validations = new List<ValidationResult>();
 
                 validations.AddRange(_Model.Instances
@@ -188,10 +195,6 @@ namespace IfcConverter.Client.Services.Model
 
                 transaction.Commit();
                 _Model.SaveAs(targetFilePath, StorageType.Ifc);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Convert and save to IFC failed", ex);
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace IfcConverter.Client.Services.Model.Base
+﻿using System.Drawing;
+
+namespace IfcConverter.Client.Services.Model.Base
 {
     public abstract class VueGeometryElement
     {
@@ -6,10 +8,14 @@
 
         public int SequenceInGroup { get; }
 
+        public Color Color { get; set; }
+
+        public double Transparency { get; set; }
+
         public VueGeometryElement(int aspectNo, int sequenceInGroup)
         {
-            this.AspectNo = aspectNo;
-            this.SequenceInGroup = sequenceInGroup;
+            AspectNo = aspectNo;
+            SequenceInGroup = sequenceInGroup;
         }
     }
 }

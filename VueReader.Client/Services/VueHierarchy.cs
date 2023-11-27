@@ -3,6 +3,7 @@ using IfcConverter.Client.Services.Model.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Pkcs;
 using Xbim.Common;
 using Xbim.Ifc4.Kernel;
 using Xbim.Ifc4.ProductExtension;
@@ -84,46 +85,69 @@ namespace IfcConverter.Client.Services
         public IfcSpatialStructureElement? Convert(IModel model)
         {
             var createdProxies = new Dictionary<string, IfcBuildingElementProxy>();
+            int idx = 0;
 
             foreach (VueHierarchyElement hierarchyElement in _HierarchyElements.Where(e => e.IsSelected))
             {
-                if (hierarchyElement.GraphicElement == null)
+                try
                 {
-                    if (!createdProxies.ContainsKey(hierarchyElement.Path))
+                    if (hierarchyElement.GraphicElement == null)
                     {
-                        var proxy = model.Instances.New<IfcBuildingElementProxy>(proxy => proxy.Name = hierarchyElement.Name);
-                        createdProxies.Add(hierarchyElement.Path, proxy);
+                        if (!createdProxies.ContainsKey(hierarchyElement.Path))
+                        {
+                            var proxy = model.Instances.New<IfcBuildingElementProxy>(proxy => proxy.Name = hierarchyElement.Name);
+                            createdProxies.Add(hierarchyElement.Path, proxy);
 
-                        if (hierarchyElement.Parent != null)
-                        {
-                            model.Instances.New<IfcRelAggregates>(aggregates =>
+                            if (hierarchyElement.Parent != null)
                             {
-                                aggregates.RelatingObject = createdProxies[hierarchyElement.Parent.Path];
-                                aggregates.RelatedObjects.Add(proxy);
-                            });
-                        }
-                        else
-                        {
-                            model.Instances.New<IfcRelAggregates>(aggregates =>
+                                model.Instances.New<IfcRelAggregates>(aggregates =>
+                                {
+                                    createdProxies.TryGetValue(hierarchyElement.Parent.Path, out IfcBuildingElementProxy? parentByPath);
+                                    aggregates.RelatedObjects.Add(proxy);
+                                    aggregates.RelatingObject = parentByPath != null ? parentByPath : Root;
+
+                                    if (parentByPath == null)
+                                    {
+                                        throw new Exception($"Parent by path '{hierarchyElement.Parent.Path}' not created as hierarchy proxy. May not be found before.");
+                                    }
+                                });
+                            }
+                            else
                             {
-                                aggregates.RelatingObject = Root;
-                                aggregates.RelatedObjects.Add(proxy);
-                            });
+                                model.Instances.New<IfcRelAggregates>(aggregates =>
+                                {
+                                    aggregates.RelatingObject = Root;
+                                    aggregates.RelatedObjects.Add(proxy);
+                                });
+                            }
                         }
                     }
+                    else
+                    {
+                        if (hierarchyElement.Parent == null)
+                        {
+                            throw new Exception("Can not add element to parent. Parent is null");
+                        }
+                        model.Instances.New<IfcRelAggregates>(aggregates =>
+                        {
+                            createdProxies.TryGetValue(hierarchyElement.Parent.Path, out IfcBuildingElementProxy? parentByPath);
+                            aggregates.RelatedObjects.Add(hierarchyElement.GraphicElement.Convert(model));
+                            aggregates.RelatingObject = parentByPath != null ? parentByPath : Root;
+
+                            if (parentByPath == null)
+                            {
+                                throw new Exception($"Parent by path '{hierarchyElement.Parent.Path}' not created as hierarchy proxy. May not be found before.");
+                            }
+                        });
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    if (hierarchyElement.Parent == null)
-                    {
-                        throw new Exception("Can not add element to parent. Parent is null");
-                    }
-                    model.Instances.New<IfcRelAggregates>(aggregates =>
-                    {
-                        aggregates.RelatingObject = createdProxies[hierarchyElement.Parent.Path];
-                        aggregates.RelatedObjects.Add(hierarchyElement.GraphicElement.Convert(model));
-                    });
+                    App.Logger.Error(ex, "Convert hierarchy failed. One of contains elements can not be converted.");
                 }
+
+
+                App.Logger.Information($"Converted {idx++} of {_HierarchyElements.Where(e => e.IsSelected).Count()} elements.");
             }
 
             return Root;

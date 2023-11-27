@@ -1,18 +1,14 @@
 ﻿<Window
     x:Class="IfcConverter.Client.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:service="clr-namespace:IfcConverter.Client.Services"
+    xmlns:controls="clr-namespace:Controls;assembly=Controls"
     Title="Model Converter"
-    Width="1200"
-    Height="800"
-    Background="#FF15191D"
-    DataContext="{StaticResource MainWindowViewModel}"
-    FontSize="11pt"
-    mc:Ignorable="d">
+    Width="1200" Height="800"
+    DataContext="{StaticResource MainWindowViewModel}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
@@ -23,60 +19,53 @@
             <RowDefinition Height="auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
+        <controls:LoadingSpinner Diameter="50" Thickness="5"
+                                 Cap="Flat"
+                                 Color="DarkBlue"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Grid.ColumnSpan="2"
+                                 Grid.RowSpan="3"
+                                 Panel.ZIndex="100"
+                                 IsLoading="{Binding IsLoading}"
+                                 ProgressText="{Binding ProgressText}"/>
         <WrapPanel Grid.ColumnSpan="2">
             <Button
                 Height="22"
-                Margin="5"
-                Padding="10,0,10,0"
-                Background="#FF2B3542"
+                Margin="5" Padding="10,0,10,0"
                 Command="{Binding UploadModelCommand}"
-                Content="Upload Model"
-                Foreground="#FFFFFAF0" />
+                Content="Upload Model" />
             <Button
                 Height="22"
-                Margin="5"
-                Padding="10,0,10,0"
-                Background="#FF2B3542"
+                Margin="5" Padding="10,0,10,0"
                 Command="{Binding PerformConvertionCommand}"
-                Content="Perform Convertion"
-                Foreground="#FFFFFAF0" />
+                Content="Perform Convertion" />
             <Button
                 Height="22"
-                Margin="5"
-                Padding="10,0,10,0"
-                Background="#FF2B3542"
+                Margin="5" Padding="10,0,10,0"
                 Command="{Binding OpenSettingsCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
-                Content="Settings"
-                Foreground="#FFFFFAF0" />
+                Content="Settings" />
             <Button
                 Height="22"
-                Margin="5"
-                Padding="10,0,10,0"
-                Background="#FF2B3542"
-                Content="Logs"
-                Foreground="#FFFFFAF0" />
+                Margin="5" Padding="10,0,10,0"
+                Content="Logs" />
         </WrapPanel>
         <TreeView
-            x:Name="treeView"
-            Grid.Row="1"
-            Grid.RowSpan="2"
-            Background="#0D1117"
-            Foreground="#FFFFFAF0"
+            Grid.Row="1" Grid.RowSpan="2"
             ItemsSource="{Binding ProductTreeItems}">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type service:VueHierarchyElement}"
                                           ItemsSource="{Binding HierarchyItems}">
-                    <TextBlock Text="{Binding Name}"
-                               Foreground="#FFFFFAF0" />
+                    <TextBlock Text="{Binding Name}" />
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
 
             <TreeView.ItemContainerStyle>
-                <Style TargetType="TreeViewItem">
+                <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="Template">
                         <Setter.Value>
-                            <ControlTemplate TargetType="TreeViewItem">
+                            <ControlTemplate TargetType="{x:Type TreeViewItem}">
                                 <Border Background="{TemplateBinding Background}"
                                         BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}">
@@ -157,27 +146,22 @@
             </TreeView.ItemContainerStyle>
         </TreeView>
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <GroupBox Foreground="#FFFFFAF0" Header="Author Product">
-                <TextBlock Foreground="#FFFFFAF0" Text="{Binding AuthorProduct}" />
+            <GroupBox Header="Author Product">
+                <TextBlock Text="{Binding AuthorProduct}" />
             </GroupBox>
-            <GroupBox Foreground="#FFFFFAF0" Header="Source File Name">
-                <TextBlock Foreground="#FFFFFAF0" Text="{Binding SorceFileName}" />
+            <GroupBox Header="Source File Name">
+                <TextBlock Text="{Binding SorceFileName}" />
             </GroupBox>
-            <GroupBox Foreground="#FFFFFAF0" Header="Viewer Product">
-                <TextBlock Foreground="#FFFFFAF0" Text="{Binding ViewerProduct}" />
+            <GroupBox Header="Viewer Product">
+                <TextBlock Text="{Binding ViewerProduct}" />
             </GroupBox>
-            <GroupBox Foreground="#FFFFFAF0" Header="File Major Revision">
-                <TextBlock Foreground="#FFFFFAF0" Text="{Binding FileMajorVersion}" />
+            <GroupBox Header="File Major Revision">
+                <TextBlock Text="{Binding FileMajorVersion}" />
             </GroupBox>
-            <GroupBox Foreground="#FFFFFAF0" Header="File Minor Revision">
-                <TextBlock Foreground="#FFFFFAF0" Text="{Binding FileMinorVersion}" />
+            <GroupBox Header="File Minor Revision">
+                <TextBlock Text="{Binding FileMinorVersion}" />
             </GroupBox>
         </StackPanel>
-        <ListBox
-            x:Name="PropertyList"
-            Grid.Row="2"
-            Grid.Column="1"
-            Background="#0D1117"
-            Foreground="#FFFFFAF0" />
+        <ListBox Grid.Row="2" Grid.Column="1" />
     </Grid>
 </Window>

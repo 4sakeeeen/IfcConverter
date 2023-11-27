@@ -2,6 +2,7 @@
 using IngrDataReadLib;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Xbim.Common;
 using Xbim.Ifc4.GeometricModelResource;
@@ -17,14 +18,21 @@ namespace IfcConverter.Client.Services.Model
         private readonly StripData _StripData;
 
 
-        public VueTessellatedElement(int aspectNo, int sequenceInGroup, IRdTessData tessData)
+        public VueTessellatedElement(int aspectNo, int sequenceInGroup, IRdTessData tessData, IRdMaterialProperties materialProperties)
             : base(aspectNo, sequenceInGroup)
         {
             var postemp = new Position2d();
             tessData.GetStripData(out StripData stripData);
             _StripData = stripData;
+
+            materialProperties.GetColor(out byte red, out byte green, out byte blue);
+            Color = Color.FromArgb(red, green, blue);
+            materialProperties.GetTransparency(out double transparency);
+            Transparency = transparency;
+            // materialProperties.GetMaterialData(out Array meterial);
         }
 
+        /// <exception cref="Exception"></exception>
         public IfcGeometricRepresentationItem Convert(IModel model)
         {
             IfcGeometricRepresentationItem geometricRepresentation = (eGraphicType)_StripData.mType switch
@@ -78,7 +86,7 @@ namespace IfcConverter.Client.Services.Model
                         }
                     });
                 }),
-                _ => throw new Exception("Invalid strip data")
+                _ => throw new Exception($"Invalid strip data: {(eGraphicType)_StripData.mType}")
             };
 
             IfcPresentationStyle style = (eGraphicType)_StripData.mType switch
@@ -97,12 +105,12 @@ namespace IfcConverter.Client.Services.Model
                     surfaceStyle.Side = IfcSurfaceSide.BOTH;
                     surfaceStyle.Styles.Add(model.Instances.New<IfcSurfaceStyleRendering>(rendering =>
                     {
-                        rendering.Transparency = 0.5;
+                        rendering.Transparency = Transparency;
                         rendering.SurfaceColour = model.Instances.New<IfcColourRgb>(color =>
                         {
-                            color.Red = 51.0 / 255;
-                            color.Green = 145.0 / 255;
-                            color.Blue = 128.0 / 255;
+                            color.Red = Color.R / 255.0;
+                            color.Green = Color.G / 255.0;
+                            color.Blue = Color.B / 255.0;
                         });
                     }));
                 }),

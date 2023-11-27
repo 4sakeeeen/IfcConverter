@@ -38,8 +38,7 @@ namespace IfcConverter.Client.Services.Model
             string moniker,
             string spfuid,
             eGraphicType graphicType,
-            IngrGeom geometry,
-            RdMaterialProperties materialProperties)
+            IngrGeom geometry)
         {
             Attributes = new Dictionary<string, string>(
                 rawProperties
@@ -68,34 +67,47 @@ namespace IfcConverter.Client.Services.Model
             };
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public IfcElement Convert(IModel model)
         {
-            var member = model.Instances.New<IfcMember>();
-            member.Name = Attributes["Name"];
-            member.Representation = model.Instances.New<IfcProductDefinitionShape>();
-            member.Representation.Representations.AddRange(GeometryGroup.Convert(model));
-            member.ObjectPlacement = model.Instances.New<IfcLocalPlacement>(
-                placement => placement.RelativePlacement = model.Instances.New<IfcAxis2Placement3D>(
-                    axis3d => axis3d.Location = model.Instances.New<IfcCartesianPoint>(
-                        point => point.SetXYZ(0, 0, 0))));
-
-            var propertySet = model.Instances.New<IfcPropertySet>();
-            propertySet.Name = "Smart Plant 3D";
-            propertySet.HasProperties.AddRange(Attributes.Select(
-                attrib => model.Instances.New<IfcPropertySingleValue>(property =>
-                {
-                    property.Name = attrib.Key;
-                    property.NominalValue = new IfcText(attrib.Value);
-                })
-            ));
-
-            model.Instances.New<IfcRelDefinesByProperties>(definesByProperties =>
+            try
             {
-                definesByProperties.RelatedObjects.Add(member);
-                definesByProperties.RelatingPropertyDefinition = propertySet;
-            });
+                var member = model.Instances.New<IfcMember>();
+                member.Name = Attributes["Name"];
+                member.Representation = model.Instances.New<IfcProductDefinitionShape>();
+                member.Representation.Representations.AddRange(GeometryGroup.Convert(model));
+                member.ObjectPlacement = model.Instances.New<IfcLocalPlacement>(
+                    placement => placement.RelativePlacement = model.Instances.New<IfcAxis2Placement3D>(
+                        axis3d => axis3d.Location = model.Instances.New<IfcCartesianPoint>(
+                            point => point.SetXYZ(0, 0, 0))));
 
-            return member;
+                var propertySet = model.Instances.New<IfcPropertySet>();
+                propertySet.Name = "Smart Plant 3D";
+                propertySet.HasProperties.AddRange(Attributes.Select(
+                    attrib => model.Instances.New<IfcPropertySingleValue>(property =>
+                    {
+                        property.Name = attrib.Key;
+                        property.NominalValue = new IfcText(attrib.Value);
+                    })
+                ));
+
+                model.Instances.New<IfcRelDefinesByProperties>(definesByProperties =>
+                {
+                    definesByProperties.RelatedObjects.Add(member);
+                    definesByProperties.RelatingPropertyDefinition = propertySet;
+                });
+
+                return member;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Creating product element failed", ex);
+            }
         }
     }
 }

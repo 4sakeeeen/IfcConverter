@@ -32,7 +32,7 @@ namespace IfcConverter.Client.Services.Model
                 {
                     if (geometry is IRdTessData tessData)
                     {
-                        _GeometryElements.Add(new VueTessellatedElement(aspectNo, i, tessData));
+                        _GeometryElements.Add(new VueTessellatedElement(aspectNo, i, tessData, materialProperties));
                     }
                     else
                     {
@@ -68,17 +68,29 @@ namespace IfcConverter.Client.Services.Model
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Convert geometry group: one of graphic element can not be converted", ex);
+                    throw new Exception($"Convert geometry group: one of graphic element can not be converted.", ex);
                 }
             }
         }
 
-
+        /// <exception cref="Exception"></exception>
         public IEnumerable<IfcShapeRepresentation> Convert(IModel model)
         {
-            foreach (IGrouping<Type, IfcGeometricRepresentationItem> geometryGroupByType in _GeometryElements
-                .Select(elem => ((IConvertable<IfcGeometricRepresentationItem>)elem).Convert(model))
-                .GroupBy(elem => elem.GetType()))
+            var geometricRepItems = new List<IfcGeometricRepresentationItem>();
+
+            foreach (VueGeometryElement geometryElement in _GeometryElements)
+            {
+                try
+                {
+                    geometricRepItems.Add(((IConvertable<IfcGeometricRepresentationItem>)geometryElement).Convert(model));
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.Error(ex, "Convert geometry group failed. One of contains elements can not be converted.");
+                }
+            }
+
+            foreach (IGrouping<Type, IfcGeometricRepresentationItem> geometryGroupByType in geometricRepItems.GroupBy(e => e.GetType()))
             {
                 var representation = model.Instances.New<IfcShapeRepresentation>();
                 representation.Items.AddRange(geometryGroupByType);

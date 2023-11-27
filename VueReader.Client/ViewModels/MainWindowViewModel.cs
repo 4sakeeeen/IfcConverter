@@ -9,8 +9,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Xbim.Ifc4.PresentationAppearanceResource;
-using Xbim.Ifc4.RepresentationResource;
+using Xbim.Ifc2x3.StructuralAnalysisDomain;
 
 namespace IfcConverter.Client.ViewModels
 {
@@ -23,7 +22,7 @@ namespace IfcConverter.Client.ViewModels
         public string? AuthorProduct
         {
             get { return _AuthorProduct; }
-            set { _ = SetProperty(ref _AuthorProduct, value); }
+            set { SetProperty(ref _AuthorProduct, value); }
         }
 
         private string? _SorceFileName;
@@ -31,7 +30,7 @@ namespace IfcConverter.Client.ViewModels
         public string? SorceFileName
         {
             get { return _SorceFileName; }
-            set { _ = SetProperty(ref _SorceFileName, value); }
+            set { SetProperty(ref _SorceFileName, value); }
         }
 
         private string? _ViewerProduct;
@@ -47,7 +46,7 @@ namespace IfcConverter.Client.ViewModels
         public string? FileMajorVersion
         {
             get { return _FileMajorVersion; }
-            set { _ = SetProperty(ref _FileMajorVersion, value); }
+            set { SetProperty(ref _FileMajorVersion, value); }
         }
 
         private string? _FileMinorVersion;
@@ -55,7 +54,23 @@ namespace IfcConverter.Client.ViewModels
         public string? FileMinorVersion
         {
             get { return _FileMinorVersion; }
-            set { _ = SetProperty(ref _FileMinorVersion, value); }
+            set { SetProperty(ref _FileMinorVersion, value); }
+        }
+
+        private string? _ProgressText;
+
+        public string? ProgressText
+        {
+            get { return _ProgressText; }
+            set { SetProperty(ref _ProgressText, value); }
+        }
+
+        private bool _IsLoading = false;
+
+        public bool IsLoading
+        {
+            get { return _IsLoading; }
+            set { SetProperty(ref _IsLoading, value); }
         }
 
         private ObservableCollection<VueHierarchyElement>? _ProductTreeItems;
@@ -97,6 +112,8 @@ namespace IfcConverter.Client.ViewModels
                 {
                     try
                     {
+                        IsLoading = true;
+                        ProgressText = "Reading vue file...";
                         _VueFile = new VueFile(ofd.FileName, tessellationTolerance: 20);
                         ProductTreeItems = new ObservableCollection<VueHierarchyElement>(_VueFile.Hierarchy.RootElements);
                         AuthorProduct = _VueFile.AuthorProduct;
@@ -107,7 +124,12 @@ namespace IfcConverter.Client.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception("Upload command failed", ex);
+                        App.Logger.Error(ex, "Upload .vue file failed");
+                        MessageBox.Show(ex.Message, "Upload command failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    finally
+                    {
+                        IsLoading = false;
                     }
                 }
             });
@@ -117,7 +139,21 @@ namespace IfcConverter.Client.ViewModels
         {
             await Task.Run(() =>
             {
-                _VueFile?.SaveToIfc(projectName: SorceFileName ?? "Nonamed Project", "C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\TestEnv.ifc");
+                try
+                {
+                    IsLoading = true;
+                    ProgressText = "Converting elements...";
+                    _VueFile?.SaveToIfc(projectName: SorceFileName ?? "Nonamed Project", "C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\TestEnv.ifc");
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.Error(ex, "Convertation process failed");
+                    MessageBox.Show(ex.Message, "Convertation failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
             });
         }
 
