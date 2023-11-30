@@ -102,7 +102,7 @@ namespace IfcConverter.Client.Services.Model
                 XbimStoreType.EsentDatabase);
 
             using ITransaction transaction = _Model.BeginTransaction("Create IFC file");
-            
+            1
             try
             {
                 var project = _Model.Instances.New<IfcProject>();
