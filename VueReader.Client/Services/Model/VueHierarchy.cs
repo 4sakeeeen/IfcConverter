@@ -29,6 +29,7 @@ namespace IfcConverter.Client.Services.Model
             try
             {
                 VueHierarchyElementViewModel? suggestParent = null;
+                // лист, который будет каждый раз добавлять в себя папку
                 var dymamicPathNodes = new List<string>();
 
                 foreach (string pathNode in element.Attributes["System Path"].Split('\\'))
@@ -36,14 +37,12 @@ namespace IfcConverter.Client.Services.Model
                     dymamicPathNodes.Add(pathNode);
                     VueHierarchyElementViewModel? existingElement = _HierarchyElements.Where(x => x.Path == string.Join('\\', dymamicPathNodes)).FirstOrDefault();
 
-                    if (suggestParent != null)
+                    if (suggestParent == null)
                     {
                         if (existingElement == null)
                         {
-                            var newHierarchyElement = new VueHierarchyElementViewModel(pathNode, string.Join('\\', dymamicPathNodes), suggestParent);
-                            _HierarchyElements.Add(newHierarchyElement);
-                            suggestParent.HierarchyItems.Add(newHierarchyElement);
-                            suggestParent = newHierarchyElement;
+                            suggestParent = new VueHierarchyElementViewModel(pathNode, string.Join('\\', dymamicPathNodes));
+                            _HierarchyElements.Add(suggestParent);
                         }
                         else
                         {
@@ -54,8 +53,10 @@ namespace IfcConverter.Client.Services.Model
                     {
                         if (existingElement == null)
                         {
-                            suggestParent = new VueHierarchyElementViewModel(pathNode, string.Join('\\', dymamicPathNodes));
-                            _HierarchyElements.Add(suggestParent);
+                            var newHierarchyElement = new VueHierarchyElementViewModel(pathNode, string.Join('\\', dymamicPathNodes), suggestParent);
+                            _HierarchyElements.Add(newHierarchyElement);
+                            suggestParent.HierarchyItems.Add(newHierarchyElement);
+                            suggestParent = newHierarchyElement;
                         }
                         else
                         {
@@ -84,7 +85,11 @@ namespace IfcConverter.Client.Services.Model
         public IfcSpatialStructureElement? Convert(IModel model)
         {
             var createdProxies = new Dictionary<string, IfcBuildingElementProxy>();
-            int idx = 0;
+            int idx = 1;
+
+            var selectedConvertedElements = _HierarchyElements
+                .Where(e => e.IsSelected && e.GraphicElement != null)
+                .Select(e => new { Converted = e.GraphicElement?.Convert(model), Wrapper = e.GraphicElement });
 
             foreach (VueHierarchyElementViewModel hierarchyElement in _HierarchyElements.Where(e => e.IsSelected))
             {
@@ -101,13 +106,31 @@ namespace IfcConverter.Client.Services.Model
                             {
                                 model.Instances.New<IfcRelAggregates>(aggregates =>
                                 {
-                                    createdProxies.TryGetValue(hierarchyElement.Parent.Path, out IfcBuildingElementProxy? parentByPath);
                                     aggregates.RelatedObjects.Add(proxy);
-                                    aggregates.RelatingObject = parentByPath != null ? parentByPath : Root;
 
-                                    if (parentByPath == null)
+                                    // checks created proxies
+                                    createdProxies.TryGetValue(hierarchyElement.Parent.Path, out IfcBuildingElementProxy? parentByPathAsProxy);
+                                    
+                                    if (parentByPathAsProxy != null)
                                     {
-                                        throw new Exception($"Parent by path '{hierarchyElement.Parent.Path}' not created as hierarchy proxy. May not be found before.");
+                                        aggregates.RelatingObject = parentByPathAsProxy;
+                                    }
+                                    else
+                                    {
+                                        // if no created proxies then parent may be as IFC element
+                                        IfcElement? parentByPathAsElement = selectedConvertedElements
+                                           .Where(e => e?.Wrapper?.Attributes["System Path"] == hierarchyElement.Parent.Path)
+                                           .Select(converted => converted.Converted).FirstOrDefault();
+
+                                        if (parentByPathAsElement != null)
+                                        {
+                                            aggregates.RelatingObject = parentByPathAsElement;
+                                        }
+                                        else
+                                        {
+                                            aggregates.RelatingObject = Root;
+                                            throw new Exception($"Parent by path '{hierarchyElement.Parent.Path}' not created as hierarchy proxy. May not be found before.");
+                                        }
                                     }
                                 });
                             }
@@ -127,15 +150,34 @@ namespace IfcConverter.Client.Services.Model
                         {
                             throw new Exception("Can not add element to parent. Parent is null");
                         }
+
                         model.Instances.New<IfcRelAggregates>(aggregates =>
                         {
-                            createdProxies.TryGetValue(hierarchyElement.Parent.Path, out IfcBuildingElementProxy? parentByPath);
                             aggregates.RelatedObjects.Add(hierarchyElement.GraphicElement.Convert(model));
-                            aggregates.RelatingObject = parentByPath != null ? parentByPath : Root;
 
-                            if (parentByPath == null)
+                            // checks created proxies
+                            createdProxies.TryGetValue(hierarchyElement.Parent.Path, out IfcBuildingElementProxy? parentByPathAsProxy);
+                            
+                            if (parentByPathAsProxy != null)
                             {
-                                throw new Exception($"Parent by path '{hierarchyElement.Parent.Path}' not created as hierarchy proxy. May not be found before.");
+                                aggregates.RelatingObject = parentByPathAsProxy;
+                            }
+                            else
+                            {
+                                // if no created proxies then parent may be as IFC element
+                                IfcElement? parentByPathAsElement = selectedConvertedElements
+                                   .Where(e => e?.Wrapper?.Attributes["System Path"] == hierarchyElement.Parent.Path)
+                                   .Select(converted => converted.Converted).FirstOrDefault();
+
+                                if (parentByPathAsElement != null)
+                                {
+                                    aggregates.RelatingObject = parentByPathAsElement;
+                                }
+                                else
+                                {
+                                    aggregates.RelatingObject = Root;
+                                    throw new Exception($"Parent by path '{hierarchyElement.Parent.Path}' not created as hierarchy proxy. May not be found before.");
+                                }
                             }
                         });
                     }

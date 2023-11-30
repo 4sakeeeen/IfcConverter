@@ -108,5 +108,10 @@ namespace IfcConverter.Client.Services.Model.Base
                 throw new Exception("Creating product element failed", ex);
             }
         }
+
+        public override string ToString()
+        {
+            return Attributes["System Path"];
+        }
     }
 }

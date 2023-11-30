@@ -1,442 +1,584 @@
 [
 	{
 		"className": "Structural System",
+		"id": 210006,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Systems"
 	},
 	{
 		"className": "Generic System",
+		"id": 40007,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Systems"
 	},
 	{
 		"className": "Conduit System",
+		"id": 210009,
 		"mappedToClassIFC": "Distribution System",
 		"category": "Systems"
 	},
 	{
 		"className": "Ducting System",
+		"id": 210001,
 		"mappedToClassIFC": "Distribution System",
 		"category": "Systems"
 	},
 	{
 		"className": "Electrical System",
+		"id": 210002,
 		"mappedToClassIFC": "Distribution System",
 		"category": "Systems"
 	},
 	{
 		"className": "Equipment System",
+		"id": 210004,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Systems"
 	},
 	{
 		"className": "Piping System",
+		"id": 210005,
 		"mappedToClassIFC": "Distribution System",
 		"category": "Systems"
 	},
 	{
 		"className": "Wall System",
+		"id": 240052,
 		"mappedToClassIFC": "Wall",
 		"category": "Systems"
 	},
 	{
 		"className": "Designed Member",
+		"id": 240030,
 		"mappedToClassIFC": "Member",
 		"category": "Metal Structures"
 	},
 	{
 		"className": "Member System Curve",
+		"id": 240027,
 		"mappedToClassIFC": "Member",
 		"category": "Metal Structures"
 	},
 	{
 		"className": "Member Part Prismatic",
+		"id": 240012,
 		"mappedToClassIFC": "Member",
 		"category": "Metal Structures"
 	},
 	{
 		"className": "Handrail",
+		"id": 240141,
 		"mappedToClassIFC": "Railing",
 		"category": "Metal Structures"
 	},
 	{
 		"className": "Slab",
+		"id": 240024,
 		"mappedToClassIFC": "Slab",
 		"category": "Metal Structures"
 	},
 	{
 		"className": "Ladder",
+		"id": 240081,
 		"mappedToClassIFC": "Stair",
 		"category": "Metal Structures"
 	},
 	{
 		"className": "Struct Insulation Spec",
+		"id": 240160,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Metal Structures"
 	},
 	{
 		"className": "SPS Wall Part",
+		"id": 240053,
 		"mappedToClassIFC": "Wall",
 		"category": "Buildings"
 	},
 	{
 		"className": "Stair",
+		"id": 240091,
 		"mappedToClassIFC": "Stair",
 		"category": "Buildings"
 	},
 	{
 		"className": "Footing",
+		"id": 240121,
 		"mappedToClassIFC": "Footing",
 		"category": "Buildings"
 	},
 	{
 		"className": "Foundation Component",
+		"id": 240067,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Buildings"
 	},
 	{
 		"className": "Equipment Foundation",
+		"id": 240066,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Buildings"
 	},
 	{
 		"className": "Footing Component",
+		"id": 240122,
 		"mappedToClassIFC": "Footing",
 		"category": "Buildings"
 	},
 	{
 		"className": "Designed Equipment",
+		"id": 20009,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Equipments"
 	},
 	{
 		"className": "Equipment Component",
+		"id": 20016,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Equipments"
 	},
 	{
 		"className": "Duct Part",
+		"id": 80009,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Component",
+		"id": 80043,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Run",
+		"id": 80010,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Spool",
+		"id": 80071,
 		"mappedToClassIFC": "Flow Terminal",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Along Leg Feature",
+		"id": 80024,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Branch Feature",
+		"id": 80025,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct End Feature",
+		"id": 80026,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Slant Transition Feature",
+		"id": 80027,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Split Feature",
+		"id": 80028,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Straight Feature",
+		"id": 80029,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Surface Mount Feature",
+		"id": 80039,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Transition Feature",
+		"id": 80030,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Turn Feature",
+		"id": 80031,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Duct Turn Transition Feature",
+		"id": 80032,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Hvac Nozzle",
+		"id": 20004,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "HVAC Elements"
 	},
 	{
 		"className": "Conduit Occur",
+		"id": 80044,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cableway Elements"
 	},
 	{
 		"className": "Conduit Component",
+		"id": 80046,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cableway Elements"
 	},
 	{
 		"className": "Conduit Nozzle",
+		"id": 20011,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "Cableway Elements"
 	},
 	{
 		"className": "Conduit Along Leg Feature",
+		"id": 80049,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cableway Elements"
 	},
 	{
 		"className": "Conduit Branch Feature",
+		"id": 80050,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cableway Elements"
 	},
 	{
 		"className": "Conduit End Feature",
+		"id": 80048,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cableway Elements"
 	},
 	{
 		"className": "Conduit Straight Feature",
+		"id": 80047,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cableway Elements"
 	},
 	{
 		"className": "Conduit Turn Feature",
+		"id": 80051,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cableway Elements"
 	},
 	{
 		"className": "Conduit Run",
+		"id": 80045,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cableway Elements"
 	},
 	{
 		"className": "Pipe Part",
+		"id": 80012,
 		"mappedToClassIFC": "Flow Controller",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Mechanical Implied Item",
+		"id": 80067,
 		"mappedToClassIFC": "Flow Fitting",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Gasket",
+		"id": 80040,
 		"mappedToClassIFC": "Flow Fitting",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Instrument",
+		"id": 80054,
 		"mappedToClassIFC": "Flow Fitting",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipeline System",
+		"id": 210007,
 		"mappedToClassIFC": "Flow Controller",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Nozzle",
+		"id": 20003,
 		"mappedToClassIFC": "Flow Moving Device",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Run",
+		"id": 80013,
 		"mappedToClassIFC": "Flow Segment",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Specialty Item",
+		"id": 80055,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Tap",
+		"id": 80060,
 		"mappedToClassIFC": "Flow Moving Device",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Implied Part Occurrence",
+		"id": 10063,
 		"mappedToClassIFC": "Flow Fitting",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Along Leg Feature",
+		"id": 80034,
 		"mappedToClassIFC": "Flow Controller",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Branch Feature",
+		"id": 80035,
 		"mappedToClassIFC": "Flow Controller",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe End Feature",
+		"id": 80036,
 		"mappedToClassIFC": "Flow Controller",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Straight Feature",
+		"id": 80037,
 		"mappedToClassIFC": "Flow Controller",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Tap Feature",
+		"id": 80059,
 		"mappedToClassIFC": "Flow Controller",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Pipe Turn Feature",
+		"id": 80038,
 		"mappedToClassIFC": "Flow Controller",
 		"category": "Piping Elements"
 	},
 	{
 		"className": "Combined Support",
+		"id": 140041,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Hanger And Supports"
 	},
 	{
 		"className": "Standard Support Component",
+		"id": 140039,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Hanger And Supports"
 	},
 	{
 		"className": "Cable Tray Support",
+		"id": 140036,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Hanger And Supports"
 	},
 	{
 		"className": "Conduit Support",
+		"id": 140042,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Hanger And Supports"
 	},
 	{
 		"className": "Connection Support Component",
+		"id": 140038,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Hanger And Supports"
 	},
 	{
 		"className": "Design Support",
+		"id": 140049,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Hanger And Supports"
 	},
 	{
 		"className": "Duct Support",
+		"id": 140037,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Hanger And Supports"
 	},
 	{
 		"className": "Logical Support Component",
+		"id": 140040,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Hanger And Supports"
 	},
 	{
 		"className": "Pipe Support",
+		"id": 140035,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Hanger And Supports"
 	},
 	{
 		"className": "Cableway Slant Transition Feature",
+		"id": 80052,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cableway Straight Feature",
+		"id": 80020,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cableway Transition Feature",
+		"id": 80021,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cableway Turn Feature",
+		"id": 80022,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cableway Turn Transition Feature",
+		"id": 80023,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cableway",
+		"id": 80003,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cableway Along Leg Feature",
+		"id": 80017,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cableway Branch Feature",
+		"id": 80018,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cableway End Feature",
+		"id": 80019,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cable Tray Part",
+		"id": 80053,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cable Tray Component",
+		"id": 80056,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cable Tray Nozzle",
+		"id": 20012,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cable Part",
+		"id": 80001,
 		"mappedToClassIFC": "Distribution Flow Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Cable Run",
+		"id": 80002,
 		"mappedToClassIFC": "Flow Segment",
 		"category": "Cables"
 	},
 	{
 		"className": "Cable Nozzle",
+		"id": 20005,
 		"mappedToClassIFC": "Distribution Control Element",
 		"category": "Cables"
 	},
 	{
 		"className": "Pipe Weld",
+		"id": 80042,
 		"mappedToClassIFC": "Buildings Element Proxy",
 		"category": "Welding"
+	},
+	{
+		"className": "Penetration Spool",
+		"id": 300005,
+		"mappedToClassIFC": "Flow Terminal",
+		"category": "Unclassified"
+	},
+	{
+		"className": "Pipe Spool",
+		"id": 300002,
+		"mappedToClassIFC": "Flow Terminal",
+		"category": "Unclassified"
+	},
+	{
+		"className": "Frame Connection",
+		"id": 240020,
+		"mappedToClassIFC": "Member",
+		"category": "Unclassified"
+	},
+	{
+		"className": "Member Part Curve",
+		"id": 240029,
+		"mappedToClassIFC": "Member",
+		"category": "Unclassified"
+	},
+	{
+		"className": "Member System Prismatic",
+		"id": 240011,
+		"mappedToClassIFC": "Member",
+		"category": "Unclassified"
+	},
+	{
+		"className": "Pipe Bolt Set",
+		"id": 80041,
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Unclassified"
+	},
+	{
+		"className": "Designed Solid",
+		"id": 20023,
+		"mappedToClassIFC": "Distribution Flow Element",
+		"category": "Unclassified"
+	},
+	{
+		"className": "Custom Plate Part",
+		"id": 280090,
+		"mappedToClassIFC": "Plate",
+		"category": "Unclassified"
+	},
+	{
+		"className": "Distribution Connection",
+		"id": 80007,
+		"mappedToClassIFC": "Building Element Proxy",
+		"category": "Unclassified"
 	}
 ]

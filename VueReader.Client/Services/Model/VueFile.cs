@@ -72,11 +72,12 @@ namespace IfcConverter.Client.Services.Model
 
                 reader.CloseVueFile();
 
+                var f = GraphicElements
+                    .OrderBy(x => x.Attributes["System Path"]);
+
                 GraphicElements
-                    .Select(x => new { Path = x.Attributes["System Path"], Element = x })
-                    .OrderBy(x => x.Path)
-                    .ToList()
-                    .ForEach(x => Hierarchy.Insert(x.Element));
+                    .OrderBy(x => x.Attributes["System Path"])
+                    .ToList().ForEach(Hierarchy.Insert);
             }
             catch (Exception ex)
             {
@@ -98,7 +99,7 @@ namespace IfcConverter.Client.Services.Model
                     EditorsOrganisationName = "Default Company"
                 },
                 XbimSchemaVersion.Ifc4,
-                XbimStoreType.InMemoryModel);
+                XbimStoreType.EsentDatabase);
 
             using ITransaction transaction = _Model.BeginTransaction("Create IFC file");
             

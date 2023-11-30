@@ -143,7 +143,7 @@ namespace IfcConverter.Client.ViewModels
                 {
                     IsLoading = true;
                     ProgressText = "Converting elements...";
-                    _VueFile?.SaveToIfc(projectName: SorceFileName ?? "Nonamed Project", "C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\TestEnv.ifc");
+                    _VueFile?.SaveToIfc(projectName: SorceFileName ?? "Nonamed Project", "C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\converted\\TestEnv.ifc");
                 }
                 catch (Exception ex)
                 {
