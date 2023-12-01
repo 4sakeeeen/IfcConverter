@@ -101,10 +101,10 @@ namespace IfcConverter.Client.Services.Model
                 XbimSchemaVersion.Ifc4,
                 XbimStoreType.EsentDatabase);
 
-            using ITransaction transaction = _Model.BeginTransaction("Create IFC file");
-            1
             try
             {
+                using ITransaction transaction = _Model.BeginTransaction("Create IFC file");
+
                 var project = _Model.Instances.New<IfcProject>();
                 project.Name = $"{projectName}: Project";
                 project.Initialize(ProjectUnits.SIUnitsUK);
@@ -140,6 +140,8 @@ namespace IfcConverter.Client.Services.Model
                 });
                 building.AddToSpatialDecomposition(buildingStorey);
 
+                transaction.Commit();
+
                 Hierarchy.Root = buildingStorey;
                 Hierarchy.Convert(_Model);
             }
@@ -150,6 +152,8 @@ namespace IfcConverter.Client.Services.Model
             finally
             {
                 var validations = new List<ValidationResult>();
+
+                using ITransaction transaction = _Model.BeginTransaction("Start validation");
 
                 validations.AddRange(_Model.Instances
                     .OfType<IfcCartesianPoint>()

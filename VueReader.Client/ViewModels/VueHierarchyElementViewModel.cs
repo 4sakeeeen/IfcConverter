@@ -10,7 +10,7 @@ namespace IfcConverter.Client.ViewModels
     {
         public string Name { get; }
 
-        public string Path { get; }
+        public string FullPath { get; }
 
         public VueGraphicElement? GraphicElement { get; }
 
@@ -27,6 +27,7 @@ namespace IfcConverter.Client.ViewModels
             {
                 SetProperty(ref _isSelected, value);
                 SelectAllChildren(HierarchyItems, value);
+                //if (Parent != null) SelectParentBranch(Parent, value);
             }
         }
 
@@ -35,10 +36,10 @@ namespace IfcConverter.Client.ViewModels
             get { return new RelayCommand(() => IsSelected ^= true); }
         }
 
-        public VueHierarchyElementViewModel(string name, string path, VueHierarchyElementViewModel? parent = null, VueGraphicElement? graphicElement = null)
+        public VueHierarchyElementViewModel(string name, string fullPath, VueHierarchyElementViewModel? parent = null, VueGraphicElement? graphicElement = null)
         {
             Name = name;
-            Path = path;
+            FullPath = fullPath;
             Parent = parent;
             GraphicElement = graphicElement;
         }
@@ -50,6 +51,12 @@ namespace IfcConverter.Client.ViewModels
                 child.IsSelected = isSelected;
                 SelectAllChildren(child.HierarchyItems, isSelected);
             }
+        }
+
+        private void SelectParentBranch(VueHierarchyElementViewModel parent, bool isSelected)
+        {
+            parent.IsSelected = isSelected;
+            if (parent.Parent != null) SelectParentBranch(parent.Parent, isSelected);
         }
     }
 }

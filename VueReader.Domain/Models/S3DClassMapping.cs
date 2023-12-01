@@ -7,15 +7,19 @@ namespace IfcConverter.Domain.Models
         [JsonPropertyName("category")]
         public string Caterory { get; set; }
 
+        [JsonPropertyName("id")]
+        public int ID { get; set; }
+
         [JsonPropertyName("className")]
         public string ClassName { get; set; }
 
         [JsonPropertyName("mappedToClassIFC")]
         public string MappedClassIFC { get; set; }
 
-        public S3DClassMapping(string caterory, string className, string mappedClassIFC)
+        public S3DClassMapping(string caterory, int id, string className, string mappedClassIFC)
         {
             Caterory = caterory;
+            ID = id;
             ClassName = className;
             MappedClassIFC = mappedClassIFC;
         }

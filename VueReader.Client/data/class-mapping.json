@@ -1,5 +1,17 @@
 [
 	{
+		"className": "80005",
+		"id": 80005,
+		"mappedToClassIFC": "Member",
+		"category": "Undefinded"
+	},
+	{
+		"className": "20014",
+		"id": 20014,
+		"mappedToClassIFC": "Member",
+		"category": "Undefinded"
+	},
+	{
 		"className": "Structural System",
 		"id": 210006,
 		"mappedToClassIFC": "Buildings Element Proxy",
