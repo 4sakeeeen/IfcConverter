@@ -14,11 +14,12 @@
 
                     <StackPanel>
                         <Ellipse Width="{TemplateBinding Diameter}" Height="{TemplateBinding Diameter}"
-                             RenderTransformOrigin="0.5 0.5"
-                             Stroke="{TemplateBinding Color}"
-                             StrokeThickness="{TemplateBinding Thickness}"
-                             StrokeDashCap="{TemplateBinding Cap}"
-                             Visibility="{TemplateBinding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                 RenderTransformOrigin="0.5 0.5"
+                                 Stroke="{TemplateBinding Color}"
+                                 StrokeThickness="{TemplateBinding Thickness}"
+                                 StrokeDashCap="{TemplateBinding Cap}"
+                                 Visibility="{TemplateBinding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                 Margin="10">
                             <Ellipse.StrokeDashArray>
                                 <MultiBinding Converter="{StaticResource DiameterAndThicknessToStrokeDashArrayConverter}">
                                     <Binding Path="Diameter" RelativeSource="{RelativeSource TemplatedParent}" />
@@ -43,10 +44,19 @@
                             </Ellipse.Triggers>
                         </Ellipse>
 
-                        <TextBlock 
-                            Text="{TemplateBinding ProgressText}"
-                            HorizontalAlignment="Center"
-                            Visibility="{TemplateBinding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Text="{TemplateBinding ProgressName}"
+                                   HorizontalAlignment="Center"
+                                   FontWeight="Bold"
+                                   Visibility="{TemplateBinding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        
+                        <TextBlock Text="{TemplateBinding ProgressInfo}"
+                                   HorizontalAlignment="Center"
+                                   Visibility="{TemplateBinding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        
+                        <TextBlock Text="{TemplateBinding ProgressAdditionalInfo}"
+                                   HorizontalAlignment="Center"
+                                   FontStyle="Italic"
+                                   Visibility="{TemplateBinding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>

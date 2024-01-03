@@ -1,5 +1,10 @@
-﻿using IfcConverter.Client.Services.Model.Base;
+﻿using DynamicExpresso;
+using DynamicExpresso.Exceptions;
+using IfcConverter.Client.Services.Filter;
+using IfcConverter.Client.Services.Model.Base;
 using IfcConverter.Client.ViewModels;
+using IfcConverter.Client.ViewModels.Base;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +17,15 @@ namespace IfcConverter.Client.Services.Model
 {
     public sealed class VueHierarchy : IConvertable<IfcSpatialStructureElement?>
     {
-        private readonly List<VueHierarchyElementViewModel> _HierarchyElements = new();
+        private readonly List<HierarchyItemViewModel> _HierarchyElements = new();
 
         public IfcSpatialStructureElement? Root { get; set; }
 
-        public IEnumerable<VueHierarchyElementViewModel> RootElements
+        public ObjectFilter? Filter { get; set; }
+
+        public HierarchyItemViewModel BuildingStoreyItem {  get; set; }
+
+        public IEnumerable<HierarchyItemViewModel> RootElements
         {
             get
             {
@@ -24,24 +33,46 @@ namespace IfcConverter.Client.Services.Model
             }
         }
 
+        public VueHierarchy()
+        {
+            var projectItem = new HierarchySpatialElementViewModel(new IFConvertable.SP3DFileReader.DTO.VueHierarchyItem { Ident = new IFConvertable.SP3DFileReader.DTO.SmartId(), Name = "The Project", Type = IFConvertable.SP3DFileReader.DTO.HierarchyItemType.SPATIAL_ELEMENT });
+            _HierarchyElements.Add(projectItem);
+
+            var siteItem = new HierarchySpatialElementViewModel(new IFConvertable.SP3DFileReader.DTO.VueHierarchyItem { Ident = new IFConvertable.SP3DFileReader.DTO.SmartId(), Name = "The Site", Type = IFConvertable.SP3DFileReader.DTO.HierarchyItemType.SPATIAL_ELEMENT });
+            _HierarchyElements.Add(siteItem);
+            
+            BuildingStoreyItem = new HierarchySpatialElementViewModel(new IFConvertable.SP3DFileReader.DTO.VueHierarchyItem { Ident = new IFConvertable.SP3DFileReader.DTO.SmartId(), Name = "The Building Storey", Type = IFConvertable.SP3DFileReader.DTO.HierarchyItemType.SPATIAL_ELEMENT });
+            _HierarchyElements.Add(BuildingStoreyItem);
+        }
+
         public void Insert(VueGraphicElement element)
         {
+            element.Attributes.TryGetValue("Name", out string? elementName);
+            element.Attributes.TryGetValue("System Path", out string? elementSystemPath);
+
             try
             {
-                VueHierarchyElementViewModel? suggestParent = null;
+                if (elementSystemPath is null)
+                {
+                    //_HierarchyElements.Add(new HierarchyItemViewModel(elementName ?? "<<no_name>>", string.Empty, BuildingStoreyItem, element));
+                    Log.Logger.Warning($"System path not found for element '{elementName}'.");
+                    return;
+                }
+
+                HierarchyItemViewModel? suggestParent = null;
                 // лист, который будет каждый раз добавлять в себя папку
                 var dymamicPathNodes = new List<string>();
 
-                foreach (string pathNode in element.Attributes["System Path"].Split('\\'))
+                foreach (string pathNode in elementSystemPath.Split('\\'))
                 {
                     dymamicPathNodes.Add(pathNode);
-                    VueHierarchyElementViewModel? existingElement = _HierarchyElements.Where(x => x.FullPath == string.Join('\\', dymamicPathNodes)).FirstOrDefault();
+                    HierarchyItemViewModel? existingElement = _HierarchyElements.Where(x => x.FullPath == string.Join('\\', dymamicPathNodes)).FirstOrDefault();
 
                     if (suggestParent == null)
                     {
                         if (existingElement == null)
                         {
-                            suggestParent = new VueHierarchyElementViewModel(pathNode, string.Join('\\', dymamicPathNodes));
+                            //suggestParent = new HierarchyItemViewModel(pathNode, string.Join('\\', dymamicPathNodes), BuildingStoreyItem);
                             _HierarchyElements.Add(suggestParent);
                         }
                         else
@@ -53,10 +84,9 @@ namespace IfcConverter.Client.Services.Model
                     {
                         if (existingElement == null)
                         {
-                            var newHierarchyElement = new VueHierarchyElementViewModel(pathNode, string.Join('\\', dymamicPathNodes), suggestParent);
-                            _HierarchyElements.Add(newHierarchyElement);
-                            suggestParent.HierarchyItems.Add(newHierarchyElement);
-                            suggestParent = newHierarchyElement;
+                            //var newHierarchyElement = new HierarchyItemViewModel(pathNode, string.Join('\\', dymamicPathNodes), suggestParent);
+                            //_HierarchyElements.Add(newHierarchyElement);
+                            //suggestParent = newHierarchyElement;
                         }
                         else
                         {
@@ -67,9 +97,8 @@ namespace IfcConverter.Client.Services.Model
 
                 if (suggestParent != null)
                 {
-                    var hierarchyElement = new VueHierarchyElementViewModel(element.Attributes["Name"], string.Join('\\', element.Attributes["System Path"], element.Attributes["Name"]), suggestParent, element);
-                    suggestParent.HierarchyItems.Add(hierarchyElement);
-                    _HierarchyElements.Add(hierarchyElement);
+                    //var hierarchyElement = new HierarchyItemViewModel(elementName ?? "<<no_name>>", string.Join('\\', elementSystemPath, elementName ?? "<<no_name>>"), suggestParent, element);
+                    //_HierarchyElements.Add(hierarchyElement);
                 }
                 else
                 {
@@ -91,11 +120,11 @@ namespace IfcConverter.Client.Services.Model
         public IfcSpatialStructureElement? Convert(IModel model)
         {
             var createdProxies = new Dictionary<string, IfcBuildingElementProxy>();
+            var selectedOrFilteredElements = _HierarchyElements.Where(e => (Filter != null && (e.GraphicElement == null || ApplyFilter(e.GraphicElement, Filter)) || e.IsSelected) && e.DisplayName != "The Project" && e.DisplayName != "The Site" && e.DisplayName != "The Building Storey");
             int idx = 1;
 
-            List<RelWrapAndConverted> selectedConvertedElements = _HierarchyElements
-                .Where(e => e.IsSelected && e.GraphicElement != null)
-                .Select(e => new RelWrapAndConverted
+            List<RelWrapAndConverted> selectedConvertedElements
+                = selectedOrFilteredElements.Where(e => e.GraphicElement != null).Select(e => new RelWrapAndConverted
                 {
                     Converted = e.GraphicElement?.Convert(model),
                     Wrapper = e.GraphicElement
@@ -103,7 +132,7 @@ namespace IfcConverter.Client.Services.Model
 
             using ITransaction transaction = model.BeginTransaction("Create hierarchy");
 
-            foreach (VueHierarchyElementViewModel hierarchyElement in _HierarchyElements.Where(e => e.IsSelected))
+            foreach (HierarchyItemViewModel hierarchyElement in selectedOrFilteredElements)
             {
                 try
                 {
@@ -111,7 +140,7 @@ namespace IfcConverter.Client.Services.Model
                     {
                         if (!createdProxies.ContainsKey(hierarchyElement.FullPath))
                         {
-                            var proxy = model.Instances.New<IfcBuildingElementProxy>(proxy => proxy.Name = hierarchyElement.Name);
+                            var proxy = model.Instances.New<IfcBuildingElementProxy>(proxy => proxy.Name = hierarchyElement.DisplayName);
                             createdProxies.Add(hierarchyElement.FullPath, proxy);
 
                             if (hierarchyElement.Parent != null)
@@ -122,7 +151,7 @@ namespace IfcConverter.Client.Services.Model
 
                                     // checks created proxies
                                     createdProxies.TryGetValue(hierarchyElement.Parent.FullPath, out IfcBuildingElementProxy? parentByPathAsProxy);
-                                    
+
                                     if (parentByPathAsProxy != null)
                                     {
                                         aggregates.RelatingObject = parentByPathAsProxy;
@@ -131,7 +160,7 @@ namespace IfcConverter.Client.Services.Model
                                     {
                                         // if no created proxies then parent may be as IFC element
                                         // maybe obsoletted
-                                        IEnumerable<RelWrapAndConverted> parentByPathAsElements 
+                                        IEnumerable<RelWrapAndConverted> parentByPathAsElements
                                             = selectedConvertedElements.Where(e => string.Join('\\', e.Wrapper?.Attributes["System Path"], e.Wrapper?.Attributes["Name"]) == hierarchyElement.Parent.FullPath);
 
                                         if (parentByPathAsElements.Count() > 1)
@@ -163,61 +192,73 @@ namespace IfcConverter.Client.Services.Model
                     }
                     else
                     {
-                        if (hierarchyElement.Parent == null)
-                        {
-                            throw new Exception("Can not add element to parent. Parent is null");
-                        }
-
                         model.Instances.New<IfcRelAggregates>(aggregates =>
                         {
-                            IEnumerable<RelWrapAndConverted> createdElements 
+                            IEnumerable<RelWrapAndConverted> createdElements
                                 = selectedConvertedElements.Where(e => e.Wrapper?.SPFUID == hierarchyElement.GraphicElement.SPFUID);
 
                             if (createdElements.Count() > 1) throw new Exception("Occurred IFC element has converted more than one time.");
                             if (!createdElements.Any()) throw new Exception("Occurred IFC element has not converted");
                             aggregates.RelatedObjects.Add(createdElements.First().Converted);
 
-                            // checks created proxies
-                            createdProxies.TryGetValue(hierarchyElement.Parent.FullPath, out IfcBuildingElementProxy? parentByPathAsProxy);
-                            
-                            if (parentByPathAsProxy != null)
+                            if (hierarchyElement.Parent != null)
                             {
-                                aggregates.RelatingObject = parentByPathAsProxy;
+                                // checks created proxies
+                                createdProxies.TryGetValue(hierarchyElement.Parent.FullPath, out IfcBuildingElementProxy? parentByPathAsProxy);
+
+                                if (parentByPathAsProxy != null)
+                                {
+                                    aggregates.RelatingObject = parentByPathAsProxy;
+                                }
+                                else
+                                {
+                                    // if no created proxies then parent may be as IFC element
+                                    IEnumerable<RelWrapAndConverted> parentByPathAsElements
+                                        = selectedConvertedElements.Where(e => e.Wrapper?.SPFUID == hierarchyElement.Parent.GraphicElement?.SPFUID);
+
+                                    if (parentByPathAsElements.Count() > 1) throw new Exception("Occurred IFC element has converted as parent IFC element more than one time.");
+                                    if (!parentByPathAsElements.Any()) throw new Exception("Occurred IFC element has not converted parent as IFC element.");
+                                    aggregates.RelatingObject = parentByPathAsElements.First().Converted;
+                                }
                             }
                             else
                             {
-                                // if no created proxies then parent may be as IFC element
-                                IEnumerable<RelWrapAndConverted> parentByPathAsElements
-                                    = selectedConvertedElements.Where(e => e.Wrapper?.SPFUID == hierarchyElement.Parent.GraphicElement?.SPFUID);
-
-                                if (parentByPathAsElements.Count() > 1) throw new Exception("Occurred IFC element has converted as parent IFC element more than one time.");
-                                if (!parentByPathAsElements.Any()) throw new Exception("Occurred IFC element has not converted parent as IFC element.");
-                                aggregates.RelatingObject = parentByPathAsElements.First().Converted;
-
-                                //if (parentByPathAsElements != null)
-                                //{
-                                    
-                                //}
-                                //else
-                                //{
-                                //    aggregates.RelatingObject = Root;
-                                //    throw new Exception($"Parent by path '{hierarchyElement.Parent.Path}' not created as hierarchy proxy. May not be found before.");
-                                //}
+                                aggregates.RelatingObject = Root;
                             }
                         });
                     }
                 }
                 catch (Exception ex)
                 {
-                    App.Logger.Error(ex, "Convert hierarchy failed. One of contains elements can not be converted.");
+                    Log.Logger.Error(ex, "Convert hierarchy failed. One of contains elements can not be converted.");
                 }
 
-                App.Logger.Information($"Converted {idx++} of {_HierarchyElements.Where(e => e.IsSelected).Count()} elements.");
+                Log.Logger.Information($"Converted {idx++} of {_HierarchyElements.Where(e => e.IsSelected).Count()} elements.");
             }
 
             transaction.Commit();
 
             return Root;
+        }
+
+        private bool ApplyFilter(VueGraphicElement element, ObjectFilter filter)
+        {
+            try
+            {
+                var interpreter = new Interpreter();
+
+                foreach (KeyValuePair<string, string> attrib in element.Attributes)
+                {
+                    interpreter.SetVariable(attrib.Key.Replace(" ", "_"), attrib.Value);
+                }
+
+                return interpreter.Eval<bool>(filter.Criteria);
+            }
+            catch (Exception ex)
+            {
+                if (ex is UnknownIdentifierException) return false;
+                throw new Exception("Apply filtering failed", ex);
+            }
         }
     }
 }

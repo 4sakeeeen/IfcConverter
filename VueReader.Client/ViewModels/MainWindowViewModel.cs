@@ -1,68 +1,56 @@
 ﻿using IfcConverter.Client.Services;
+using IfcConverter.Client.Services.Filter;
 using IfcConverter.Client.Services.Model;
 using IfcConverter.Client.ViewModels.Base;
 using IfcConverter.Client.Windows;
+using IFConvertable.SP3DFileReader.DTO;
 using Microsoft.Win32;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Xbim.Ifc2x3.StructuralAnalysisDomain;
 
 namespace IfcConverter.Client.ViewModels
 {
-    internal sealed class MainWindowViewModel : ViewModel
+    public sealed class MainWindowViewModel : ViewModel
     {
         private VueFile? _VueFile = null;
 
-        private string? _AuthorProduct;
+        private VueFileMetadata _FileInfo = new();
 
-        public string? AuthorProduct
+        public VueFileMetadata FileInfo
         {
-            get { return _AuthorProduct; }
-            set { SetProperty(ref _AuthorProduct, value); }
+            get { return _FileInfo; }
+            set { SetProperty(ref _FileInfo, value); }
         }
 
-        private string? _SorceFileName;
+        private string? _ProgressName;
 
-        public string? SorceFileName
+        public string? ProgressName
         {
-            get { return _SorceFileName; }
-            set { SetProperty(ref _SorceFileName, value); }
+            get { return _ProgressName; }
+            set { SetProperty(ref _ProgressName, value); }
         }
 
-        private string? _ViewerProduct;
+        private string? _ProgressInfo;
 
-        public string? ViewerProduct
+        public string? ProgressInfo
         {
-            get { return _ViewerProduct; }
-            set { SetProperty(ref _ViewerProduct, value); }
+            get { return _ProgressInfo; }
+            set { SetProperty(ref _ProgressInfo, value); }
         }
 
-        private string? _FileMajorVersion;
+        private string? _ProgressAdditionalInfo;
 
-        public string? FileMajorVersion
+        public string? ProgressAdditionalInfo
         {
-            get { return _FileMajorVersion; }
-            set { SetProperty(ref _FileMajorVersion, value); }
-        }
-
-        private string? _FileMinorVersion;
-
-        public string? FileMinorVersion
-        {
-            get { return _FileMinorVersion; }
-            set { SetProperty(ref _FileMinorVersion, value); }
-        }
-
-        private string? _ProgressText;
-
-        public string? ProgressText
-        {
-            get { return _ProgressText; }
-            set { SetProperty(ref _ProgressText, value); }
+            get { return _ProgressAdditionalInfo; }
+            set { SetProperty(ref _ProgressAdditionalInfo, value); }
         }
 
         private bool _IsLoading = false;
@@ -73,17 +61,33 @@ namespace IfcConverter.Client.ViewModels
             set { SetProperty(ref _IsLoading, value); }
         }
 
-        private ObservableCollection<VueHierarchyElementViewModel>? _ProductTreeItems;
-
-        public ObservableCollection<VueHierarchyElementViewModel>? ProductTreeItems
+        public IEnumerable<ObjectFilter>? Filters
         {
-            get { return _ProductTreeItems; }
-            set { _ = SetProperty(ref _ProductTreeItems, value); }
+            get
+            {
+                return JsonSerializer.Deserialize<List<ObjectFilter>>(File.ReadAllText("data\\filters.json"));
+            }
+        }
+
+        private ObjectFilter? _SelectedFilter;
+
+        public ObjectFilter? SelectedFilter
+        {
+            get { return _SelectedFilter; }
+            set { SetProperty(ref _SelectedFilter, value); }
+        }
+
+        private ObservableCollection<HierarchyItemViewModel>? _VueHierarchyItems;
+
+        public ObservableCollection<HierarchyItemViewModel>? ProductTreeItems
+        {
+            get { return _VueHierarchyItems; }
+            set { _ = SetProperty(ref _VueHierarchyItems, value); }
         }
 
         public ICommand UploadModelCommand
         {
-            get { return new RelayCommandAsync(Upload, (ex) => App.Logger.Error(ex, "Upload vue file error")); }
+            get { return new RelayCommandAsync(Upload, (ex) => Log.Logger.Error(ex, "Upload vue file error")); }
         }
 
         public ICommand OpenSettingsCommand
@@ -100,31 +104,46 @@ namespace IfcConverter.Client.ViewModels
 
         public ICommand PerformConvertionCommand
         {
-            get { return new RelayCommandAsync(PerformConvertion, (ex) => App.Logger.Error(ex, "Convertion error")); }
+            get { return new RelayCommandAsync(PerformConvertion, (ex) => Log.Logger.Error(ex, "Convertion error")); }
         }
 
         private async Task Upload()
         {
             await Task.Run(() =>
             {
-                var ofd = new OpenFileDialog { Filter = "VUE files (*.vue)|*.vue" };
-                if (ofd.ShowDialog() == true)
+                OpenFileDialog ofd = new()
+                {
+                    Title = "Select smart plant 3D model file",
+                    Filter = "VUE File (*.vue)|*.vue"
+                };
+
+                if (ofd.ShowDialog().GetValueOrDefault())
                 {
                     try
                     {
                         IsLoading = true;
-                        ProgressText = "Reading vue file...";
-                        _VueFile = new VueFile(ofd.FileName, tessellationTolerance: 20);
-                        ProductTreeItems = new ObservableCollection<VueHierarchyElementViewModel>(_VueFile.Hierarchy.RootElements);
-                        AuthorProduct = _VueFile.AuthorProduct;
-                        SorceFileName = _VueFile.SorceFileName;
-                        ViewerProduct = _VueFile.ViewerProduct;
-                        FileMajorVersion = _VueFile.FileMajorVersion;
-                        FileMinorVersion = _VueFile.FileMinorVersion;
+                        int read = 0;
+
+                        IFConvertable.SP3DFileReader.VueFileReader reader = new(ofd.FileName);
+                        reader.ReadPerformed += (e) =>
+                        {
+                            if (e.Action == IFConvertable.SP3DFileReader.ReaderActions.GET_ATTRIBUTES && e.Context != null)
+                            {
+                                ((Dictionary<string, string>)e.Context).TryGetValue("Name", out string? elementName);
+                                ProgressName = "Reading...";
+                                ProgressInfo = $"{elementName}";
+                                ProgressAdditionalInfo = $"Processed {read++} graphic elements";
+                            }
+                            Log.Information($"{e.Action}: {e.ResultCode}");
+                        };
+
+                        ProgressName = "Creating reader instance...";
+                        FileInfo = reader.ReadFileMetadata();
+                        ProductTreeItems = new ObservableCollection<HierarchyItemViewModel> { new HierarchySystemViewModel(reader.ReadHierarchy().Root) };
                     }
                     catch (Exception ex)
                     {
-                        App.Logger.Error(ex, "Upload .vue file failed");
+                        Log.Logger.Error(ex, "Upload .vue file failed");
                         MessageBox.Show(ex.Message, "Upload command failed", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     finally
@@ -141,13 +160,23 @@ namespace IfcConverter.Client.ViewModels
             {
                 try
                 {
-                    IsLoading = true;
-                    ProgressText = "Converting elements...";
-                    _VueFile?.SaveToIfc(projectName: SorceFileName ?? "Nonamed Project", "C:\\Users\\Windows 11\\source\\repos\\IfcConverter\\DataExamples\\converted\\TestEnv.ifc");
+                    SaveFileDialog ofd = new()
+                    {
+                        Title = "Save converted model",
+                        Filter = "International Foundation Class (*.ifc)|*.ifc"
+                    };
+
+                    if (ofd.ShowDialog().GetValueOrDefault())
+                    {
+                        IsLoading = true;
+                        ProgressAdditionalInfo = "Converting elements...";
+
+                        _VueFile?.SaveToIfc(projectName: FileInfo.SourceName ?? "Nonamed Project", ofd.FileName, SelectedFilter);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    App.Logger.Error(ex, "Convertation process failed");
+                    Log.Logger.Error(ex, "Convertation process failed");
                     MessageBox.Show(ex.Message, "Convertation failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
@@ -157,11 +186,11 @@ namespace IfcConverter.Client.ViewModels
             });
         }
 
-        private IEnumerable<VueHierarchyElementViewModel> GetSelectedItems(IEnumerable<VueHierarchyElementViewModel> items)
+        private IEnumerable<HierarchyItemViewModel> GetSelectedItems(IEnumerable<HierarchyItemViewModel> items)
         {
-            var result = new List<VueHierarchyElementViewModel>();
+            var result = new List<HierarchyItemViewModel>();
             
-            foreach (VueHierarchyElementViewModel item in items)
+            foreach (HierarchyItemViewModel item in items)
             {
                 if (item.IsSelected)
                 {
@@ -169,7 +198,7 @@ namespace IfcConverter.Client.ViewModels
                 }
                 else
                 {
-                    result.AddRange(GetSelectedItems(item.HierarchyItems));
+                    result.AddRange(GetSelectedItems(item.Children));
                 }
             }
 

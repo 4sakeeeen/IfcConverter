@@ -8,6 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Imgs\diagram-project-solid.png" />
+    <None Remove="Imgs\elementor.png" />
+    <None Remove="Imgs\folder-closed-regular.png" />
+    <None Remove="Imgs\folder-solid.png" />
+    <None Remove="Imgs\warehouse-solid.png" />
+    <None Remove="Windows\diagram-project-solid.png" />
+    <None Remove="Windows\elementor.png" />
+    <None Remove="Windows\folder-closed-regular.png" />
+    <None Remove="Windows\folder-solid.png" />
+    <None Remove="Windows\warehouse-solid.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <COMReference Include="IngrDataReadLib">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
@@ -20,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
     <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
@@ -28,7 +42,31 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Controls\Controls.csproj" />
+    <ProjectReference Include="..\IFConvertable.SP3DFileReader\IFConvertable.SP3DFileReader.csproj" />
     <ProjectReference Include="..\VueReader.Domain\IfcConverter.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Imgs\diagram-project-solid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Imgs\elementor.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Imgs\folder-closed-regular.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Imgs\folder-solid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Imgs\warehouse-solid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Windows\diagram-project-solid.png" />
+    <Resource Include="Windows\elementor.png" />
+    <Resource Include="Windows\folder-closed-regular.png" />
+    <Resource Include="Windows\folder-solid.png" />
+    <Resource Include="Windows\warehouse-solid.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +74,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="data\class-mapping.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data\filters.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

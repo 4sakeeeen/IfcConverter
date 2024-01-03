@@ -13,7 +13,7 @@ namespace Controls
         }
 
         public static readonly DependencyProperty IsloadingProperty =
-            DependencyProperty.Register("IsLoading", typeof(bool), typeof(LoadingSpinner), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsLoading), typeof(bool), typeof(LoadingSpinner), new PropertyMetadata(false));
 
         public double Diameter
         {
@@ -22,7 +22,7 @@ namespace Controls
         }
 
         public static readonly DependencyProperty DiameterProperty =
-            DependencyProperty.Register("Diameter", typeof(double), typeof(LoadingSpinner), new PropertyMetadata(100.0));
+            DependencyProperty.Register(nameof(Diameter), typeof(double), typeof(LoadingSpinner), new PropertyMetadata(100.0));
 
         public double Thickness
         {
@@ -31,7 +31,7 @@ namespace Controls
         }
 
         public static readonly DependencyProperty ThicknessProperty =
-            DependencyProperty.Register("Thickness", typeof(double), typeof(LoadingSpinner), new PropertyMetadata(1.0));
+            DependencyProperty.Register(nameof(Thickness), typeof(double), typeof(LoadingSpinner), new PropertyMetadata(1.0));
 
         public Brush Color
         {
@@ -40,7 +40,7 @@ namespace Controls
         }
 
         public static readonly DependencyProperty ColorProperty =
-            DependencyProperty.Register("Color", typeof(Brush), typeof(LoadingSpinner), new PropertyMetadata(Brushes.Black));
+            DependencyProperty.Register(nameof(Color), typeof(Brush), typeof(LoadingSpinner), new PropertyMetadata(Brushes.Black));
 
         public PenLineCap Cap
         {
@@ -49,16 +49,34 @@ namespace Controls
         }
 
         public static readonly DependencyProperty CapProperty =
-            DependencyProperty.Register("Cap", typeof(PenLineCap), typeof(LoadingSpinner), new PropertyMetadata(PenLineCap.Flat));
+            DependencyProperty.Register(nameof(Cap), typeof(PenLineCap), typeof(LoadingSpinner), new PropertyMetadata(PenLineCap.Flat));
 
-        public string ProgressText
+        public string ProgressName
         {
-            get { return (string)GetValue(ProgressTextProperty); }
-            set { SetValue(ProgressTextProperty, value); }
+            get { return (string)GetValue(ProgressNameProperty); }
+            set { SetValue(ProgressNameProperty, value); }
         }
 
-        public static readonly DependencyProperty ProgressTextProperty =
-            DependencyProperty.Register("ProgressText", typeof(string), typeof(LoadingSpinner), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty ProgressNameProperty =
+            DependencyProperty.Register(nameof(ProgressName), typeof(string), typeof(LoadingSpinner), new PropertyMetadata(string.Empty));
+
+        public string ProgressInfo
+        {
+            get { return (string)GetValue(ProgressInfoProperty); }
+            set { SetValue(ProgressInfoProperty, value); }
+        }
+
+        public static readonly DependencyProperty ProgressInfoProperty =
+            DependencyProperty.Register(nameof(ProgressInfo), typeof(string), typeof(LoadingSpinner), new PropertyMetadata(string.Empty));
+
+        public string ProgressAdditionalInfo
+        {
+            get { return (string)GetValue(ProgressAdditionalInfoProperty); }
+            set { SetValue(ProgressAdditionalInfoProperty, value); }
+        }
+
+        public static readonly DependencyProperty ProgressAdditionalInfoProperty =
+            DependencyProperty.Register(nameof(ProgressAdditionalInfo), typeof(string), typeof(LoadingSpinner), new PropertyMetadata(string.Empty));
 
         static LoadingSpinner()
         {

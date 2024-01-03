@@ -1,0 +1,10 @@
+﻿[
+	{
+		"name": "Filter - 1",
+		"criteria": "Nominal_Diameter != \"80mm\" && Dry_Weight == \"4,9 kg\""
+	},
+	{
+		"name": "Filter - 2: for example",
+		"criteria": "System_Path == \"Àïïàðàò ÃÊÊ-1-1-1-40-0,07-Ó\\Å1 - Âûõîä ïðîäóêòà\\EME 1997 Âûõîä ïðîäóêòà\" && (Name == \"Nominal_Diameter\" || Name == \"80 mm\")"
+	}
+]

@@ -28,7 +28,9 @@
                                  Grid.RowSpan="3"
                                  Panel.ZIndex="100"
                                  IsLoading="{Binding IsLoading}"
-                                 ProgressText="{Binding ProgressText}"/>
+                                 ProgressName="{Binding ProgressName}"
+                                 ProgressInfo="{Binding ProgressInfo}"
+                                 ProgressAdditionalInfo="{Binding ProgressAdditionalInfo}"/>
         <WrapPanel Grid.ColumnSpan="2">
             <Button
                 Height="22"
@@ -50,14 +52,56 @@
                 Height="22"
                 Margin="5" Padding="10,0,10,0"
                 Content="Logs" />
+            <ComboBox ItemsSource="{Binding Filters}"
+                      SelectedItem="{Binding SelectedFilter}"
+                      Width="150"
+                      Height="22">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </WrapPanel>
         <TreeView
             Grid.Row="1" Grid.RowSpan="2"
             ItemsSource="{Binding ProductTreeItems}">
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type vm:VueHierarchyElementViewModel}"
-                                          ItemsSource="{Binding HierarchyItems}">
-                    <TextBlock Text="{Binding Name}" />
+                <HierarchicalDataTemplate DataType="{x:Type vm:HierarchySystemViewModel}"
+                                          ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="3">
+                        <Image Source="/Windows/diagram-project-solid.png"
+                               Margin="5,0,5,0" />
+                        <TextBlock Text="{Binding DisplayName}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:HierarchyFolderViewModel}"
+                                          ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="3">
+                        <Image Source="/Windows/folder-solid.png"
+                               Margin="5,0,5,0" />
+                        <TextBlock Text="{Binding DisplayName}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:HierarchySpatialElementViewModel}"
+                                          ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="3">
+                        <Image Source="/Windows/warehouse-solid.png"
+                               Margin="5,0,5,0" />
+                        <TextBlock Text="{Binding DisplayName}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:HierarchyElementViewModel}"
+                                          ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="3">
+                        <Image Source="/Windows/elementor.png"
+                               Margin="5,0,5,0" />
+                        <TextBlock Text="{Binding DisplayName}" />
+                    </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
 
@@ -75,12 +119,14 @@
                                                           IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" 
                                                           Background="Transparent"
                                                           BorderThickness="0"
-                                                          RenderTransformOrigin="0.5, 0.5">
+                                                          RenderTransformOrigin="0.5, 0.5"
+                                                          Width="15" Height="15">
                                                 <ToggleButton.RenderTransform>
                                                     <RotateTransform />
                                                 </ToggleButton.RenderTransform>
                                                 <ToggleButton.Content>
-                                                    <TextBlock Text="&#xE76C;" FontFamily="Segoe MDL2 Assets" />
+                                                    <TextBlock Text="&#xE76C;"
+                                                               FontFamily="Segoe MDL2 Assets" />
                                                 </ToggleButton.Content>
                                             </ToggleButton>
                                             
@@ -100,8 +146,8 @@
                                         </StackPanel>
 
                                         <ItemsPresenter x:Name="ItemsHost"
-                                  Visibility="Collapsed"
-                                  Margin="12,0,0,0" />
+                                                        Visibility="Collapsed"
+                                                        Margin="20,0,0,0" />
                                     </StackPanel>
 
                                     <!-- Animate the node's expander -->
@@ -110,9 +156,9 @@
                                             <VisualState x:Name="Expanded">
                                                 <Storyboard>
                                                     <DoubleAnimation Storyboard.TargetName="Expander"
-                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                                         To="90" 
-                                         Duration="0:0:0.1" />
+                                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                                     To="90" 
+                                                                     Duration="0:0:0.1" />
                                                     <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ItemsHost"                         
                                                        Storyboard.TargetProperty="(UIElement.Visibility)">
                                                         <DiscreteObjectKeyFrame KeyTime="0:0:0" 
@@ -147,19 +193,19 @@
         </TreeView>
         <StackPanel Grid.Row="1" Grid.Column="1">
             <GroupBox Header="Author Product">
-                <TextBlock Text="{Binding AuthorProduct}" />
+                <TextBlock Text="{Binding FileInfo.AuthorProduct}" />
             </GroupBox>
             <GroupBox Header="Source File Name">
-                <TextBlock Text="{Binding SorceFileName}" />
+                <TextBlock Text="{Binding FileInfo.SourceName}" />
             </GroupBox>
             <GroupBox Header="Viewer Product">
-                <TextBlock Text="{Binding ViewerProduct}" />
+                <TextBlock Text="{Binding FileInfo.ViewerProduct}" />
             </GroupBox>
             <GroupBox Header="File Major Revision">
-                <TextBlock Text="{Binding FileMajorVersion}" />
+                <TextBlock Text="{Binding FileInfo.MajorVersion}" />
             </GroupBox>
             <GroupBox Header="File Minor Revision">
-                <TextBlock Text="{Binding FileMinorVersion}" />
+                <TextBlock Text="{Binding FileInfo.MinorVersion}" />
             </GroupBox>
         </StackPanel>
         <ListBox Grid.Row="2" Grid.Column="1" />

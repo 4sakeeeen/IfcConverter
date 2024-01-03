@@ -17,13 +17,13 @@ namespace IfcConverter.Client.Services
 
         public RelayCommand(Action<T> execute, Predicate<T>? canExecute = null)
         {
-            this._Execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            this._CanExecute = canExecute;
+            _Execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _CanExecute = canExecute;
         }
 
-        public bool CanExecute(object? parameter) => this._CanExecute == null || this._CanExecute((T)parameter);
+        public bool CanExecute(object? parameter) => _CanExecute == null || _CanExecute((T)parameter);
 
-        public void Execute(object? parameter) => this._Execute.Invoke((T)parameter);
+        public void Execute(object? parameter) => _Execute.Invoke((T)parameter);
     }
 
     internal sealed class RelayCommand : ICommand
@@ -40,12 +40,12 @@ namespace IfcConverter.Client.Services
 
         public RelayCommand(Action execute, Predicate<object?>? canExecute = null)
         {
-            this._Execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            this._CanExecute = canExecute;
+            _Execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _CanExecute = canExecute;
         }
 
-        public bool CanExecute(object? parameter) => this._CanExecute == null || this._CanExecute(parameter);
+        public bool CanExecute(object? parameter) => _CanExecute == null || _CanExecute(parameter);
 
-        public void Execute(object? parameter) => this._Execute.Invoke();
+        public void Execute(object? parameter) => _Execute.Invoke();
     }
 }

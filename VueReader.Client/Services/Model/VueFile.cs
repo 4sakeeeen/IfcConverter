@@ -1,9 +1,9 @@
-﻿using IfcConverter.Client.Services.Model.Base;
+﻿using IfcConverter.Client.Services.Filter;
+using IfcConverter.Client.Services.Model.Base;
 using IngrDataReadLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Transactions;
 using Xbim.Common;
 using Xbim.Common.ExpressValidation;
 using Xbim.Common.Step21;
@@ -51,7 +51,7 @@ namespace IfcConverter.Client.Services.Model
                 reader.SetTessellatorTolerance(tessellationTolerance);
 
                 reader.OpenVueFile(filePath, out errorCode);
-                if (errorCode != eErrorCode.E_OK) { throw new Exception("Open vue file was failed"); }
+                if (errorCode != eErrorCode.E_OK) throw new Exception("Open vue file was failed.");
 
                 SourceFileInfo sourceFileInfo = new();
                 reader.GetSourceFileInfo(ref sourceFileInfo);
@@ -63,20 +63,29 @@ namespace IfcConverter.Client.Services.Model
 
                 while (errorCode != eErrorCode.E_EOF)
                 {
-                    reader.GetCurrentGraphicLabelProperties(out Array propertyArray, out errorCode);
                     reader.GetCurrentGraphicIdentifier(out string linkage, out string moniker, out string spfuid);
+
+                    reader.GetCurrentGraphicLabelProperties(out Array propertyArray, out errorCode);
+                    if (errorCode != eErrorCode.E_OK) throw new Exception("Unable to get label properties of current graphic element.");
+
                     reader.GetCurrentGraphicElement(out eGraphicType gtype, ref geometry, ref materialProperties, out errorCode);
+                    if (errorCode != eErrorCode.E_OK) throw new Exception("Unable to get graphic data of current element.");
+
+                    var graphicElement = new VueGraphicElement(propertyArray, linkage, moniker, spfuid, gtype, geometry);
+                    GraphicElements.Add(graphicElement);
+
                     reader.GetNextGraphicElement(out errorCode);
-                    GraphicElements.Add(new VueGraphicElement(propertyArray, linkage, moniker, spfuid, gtype, geometry));
+                    if (errorCode != eErrorCode.E_OK && errorCode != eErrorCode.E_EOF) throw new Exception("Unable to get next graphic element.");
                 }
 
                 reader.CloseVueFile();
 
-                var f = GraphicElements
-                    .OrderBy(x => x.Attributes["System Path"]);
-
                 GraphicElements
-                    .OrderBy(x => x.Attributes["System Path"])
+                    .OrderBy(x =>
+                    {
+                        x.Attributes.TryGetValue("System Path", out string? systemPath);
+                        return systemPath;
+                    })
                     .ToList().ForEach(Hierarchy.Insert);
             }
             catch (Exception ex)
@@ -85,7 +94,7 @@ namespace IfcConverter.Client.Services.Model
             }
         }
       
-        public void SaveToIfc(string projectName, string targetFilePath)
+        public void SaveToIfc(string projectName, string targetFilePath, ObjectFilter? filter = null)
         {
             _Model = IfcStore.Create(
                 new XbimEditorCredentials
@@ -142,6 +151,7 @@ namespace IfcConverter.Client.Services.Model
 
                 transaction.Commit();
 
+                Hierarchy.Filter = filter;
                 Hierarchy.Root = buildingStorey;
                 Hierarchy.Convert(_Model);
             }

@@ -83,9 +83,14 @@ namespace IfcConverter.Client.Services.Model.Base
                 using ITransaction transaction = model.BeginTransaction("Create IFC element");
 
                 var mapping = JsonSerializer.Deserialize<List<S3DClassMapping>>(File.ReadAllText("data\\class-mapping.json")) ?? throw new Exception("Error in retrieve class mapping.");
-                int id = int.Parse(SPFUID.Split("!!")[1].Split("##")[0]);
+                int classId = int.Parse(SPFUID.Split("!!")[1].Split("##")[0]);
                 string guid = SPFUID.Split("##")[1];
-                S3DClassMapping classMappingById = mapping.FirstOrDefault(map => map.ID == id) ?? throw new Exception($"Cannot find mapping to S3D ID: {id}.");
+
+                if (guid.Length > 22) throw new Exception("Smart GUID length more than 22.");
+
+                guid = guid.PadRight(22, '0');
+
+                S3DClassMapping classMappingById = mapping.FirstOrDefault(map => map.ID == classId) ?? throw new Exception($"Cannot find mapping to S3D ID: {classId}.");
 
                 IfcProduct product = classMappingById.MappedClassIFC switch
                 {

@@ -1,5 +1,6 @@
 ﻿using IfcConverter.Client.Services.Model.Base;
 using IngrDataReadLib;
+using Serilog;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -86,7 +87,7 @@ namespace IfcConverter.Client.Services.Model
                 }
                 catch (Exception ex)
                 {
-                    App.Logger.Error(ex, "Convert geometry group failed. One of contains elements can not be converted.");
+                    Log.Logger.Error(ex, "Convert geometry group failed. One of contains elements can not be converted.");
                 }
             }
 

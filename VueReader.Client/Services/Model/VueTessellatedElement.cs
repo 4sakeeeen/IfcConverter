@@ -13,7 +13,7 @@ using Xbim.Ifc4.TopologyResource;
 
 namespace IfcConverter.Client.Services.Model
 {
-    public class VueTessellatedElement : VueGeometryElement, IConvertable<IfcGeometricRepresentationItem>
+    public sealed class VueTessellatedElement : VueGeometryElement, IConvertable<IfcGeometricRepresentationItem>
     {
         private readonly StripData _StripData;
 
