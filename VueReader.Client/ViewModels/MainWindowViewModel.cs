@@ -82,7 +82,7 @@ namespace IfcConverter.Client.ViewModels
         public ObservableCollection<HierarchyItemViewModel>? ProductTreeItems
         {
             get { return _VueHierarchyItems; }
-            set { _ = SetProperty(ref _VueHierarchyItems, value); }
+            set { SetProperty(ref _VueHierarchyItems, value); }
         }
 
         public ICommand UploadModelCommand

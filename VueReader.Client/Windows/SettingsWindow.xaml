@@ -8,84 +8,115 @@
     Title="Settings"
     Width="1200" Height="800"
     DataContext="{StaticResource SettingsWindowViewModel}">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
- 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-     
-        <TextBlock Grid.ColumnSpan="2"
-                   Margin="5"
-                   Text="Class Mapping:" />
- 
-        <ListBox Grid.IsSharedSizeScope="True"
-                 Grid.Row="1"
-                 Margin="5"
-                 ItemsSource="{Binding ClassMappingsView}"
-                 SelectedItem="{Binding SelectedClassMapping}">
-            <ListBox.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Padding="10"
-                                       FontWeight="Bold"
-                                       Text="{Binding Path=Name}" />
-                        </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-            </ListBox.GroupStyle>
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type vm:S3DClassMappingViewModel}">
-                    <Grid Margin="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition SharedSizeGroup="Key" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding ClassName}" />
-                        <TextBlock Grid.Column="1"
-                                   Width="300"
-                                   Text="{Binding MappedToClassIFC}">
-                        </TextBlock>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        
-        <Grid Grid.Row="1"
-              Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
-            
-            <WrapPanel>
-                <TextBox Width="200"
-                         Margin="5"
-                         Text="Search..." />
-            </WrapPanel>
-            
-            <TreeView Grid.Row="1"
+    <StackPanel>
+        <TabControl>
+            <TabItem Header="Common">
+                <StackPanel>
+                    <GroupBox Header="Encoding" Padding="5">
+                        <Grid Width="500" HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Read source model as:" VerticalAlignment="Center" />
+                            <ComboBox Grid.Column="1" Height="16pt" SelectedValue="Windows-1252 (CP-1252)">
+                                <ComboBoxItem Content="Windows-1252 (CP-1252)" />
+                            </ComboBox>
+                            <TextBlock Grid.Row="1" Text="Interpret to:" VerticalAlignment="Center" />
+                            <ComboBox Grid.Column="1" Grid.Row="1" Height="16pt" SelectedValue="Windows-1251">
+                                <ComboBoxItem Content="Windows-1251" />
+                            </ComboBox>
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Mapping">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.ColumnSpan="2"
+                  Margin="5"
+                  Text="Class Mapping:" />
+
+                    <ListBox Grid.IsSharedSizeScope="True"
+                Grid.Row="1"
+                Margin="5"
+                ItemsSource="{Binding ClassMappingsView}"
+                SelectedItem="{Binding SelectedClassMapping}">
+                        <ListBox.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Padding="10"
+                                      FontWeight="Bold"
+                                      Text="{Binding Path=Name}" />
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListBox.GroupStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:S3DClassMappingViewModel}">
+                                <Grid Margin="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="Key" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding ClassName}" />
+                                    <TextBlock Grid.Column="1"
+                                  Width="300"
+                                  Text="{Binding MappedToClassIFC}">
+                                    </TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <Grid Grid.Row="1"
+             Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <WrapPanel>
+                            <TextBox Width="200"
+                        Margin="5"
+                        Text="Search..." />
+                        </WrapPanel>
+
+                        <TreeView Grid.Row="1"
+                     Margin="5"
+                     ItemsSource="{Binding IfcClasses}">
+                            <TreeView.Resources>
+                                <HierarchicalDataTemplate DataType="{x:Type vm:IfcClassViewModel}"
+                                             ItemsSource="{Binding Inherits}">
+                                    <TextBlock Text="{Binding Name}" />
+                                </HierarchicalDataTemplate>
+                            </TreeView.Resources>
+                        </TreeView>
+                        <TextBlock Grid.Row="2"
+                      Height="100"
                       Margin="5"
-                      ItemsSource="{Binding IfcClasses}">
-                <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type vm:IfcClassViewModel}"
-                                              ItemsSource="{Binding Inherits}">
-                        <TextBlock Text="{Binding Name}" />
-                    </HierarchicalDataTemplate>
-                </TreeView.Resources>
-            </TreeView>
-            <TextBlock Grid.Row="2"
-                       Height="100"
-                       Margin="5"
-                       FontSize="9pt"
-                       Text="Some paragraphes that can help to explain type usability."
-                       TextWrapping="Wrap" />
-        </Grid>
-    </Grid>
+                      FontSize="9pt"
+                      Text="Some paragraphes that can help to explain type usability."
+                      TextWrapping="Wrap" />
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </StackPanel>
 </Window>

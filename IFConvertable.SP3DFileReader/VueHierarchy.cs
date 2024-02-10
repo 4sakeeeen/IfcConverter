@@ -1,43 +1,43 @@
-﻿using IFConvertable.SP3DFileReader.DTO;
+﻿using System.Text.Json;
+using IFConvertable.SP3DFileReader.DTO;
 using Serilog;
-using System.Reflection.Metadata.Ecma335;
-using System.Text.Json;
 
-namespace IFConvertable.SP3DFileReader
-{
+namespace IFConvertable.SP3DFileReader {
     public sealed class VueHierarchy
     {
         public VueHierarchyItem Root { get; } = new() { Ident = new SmartId(), Name = "ROOT", Type = HierarchyItemType.SYSTEM };
+
+        public VueHierarchyItem Undefinded { get; } = new() { Ident = new SmartId(), Name = "UNDEFINDED", Type = HierarchyItemType.SYSTEM };
 
         /// <summary>
         /// Create new hierarchy item and insert it to general hierarchy tree by using Children property.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="hierarchyNode"></param>
-        /// <param name="systemPathNodes"></param>
+        /// <param name="hierarchyNodeName"></param>
+        /// <param name="sysPathNodes"></param>
         /// <exception cref="Exception"></exception>
-        public void Insert(SmartId id, string hierarchyNode, string[] systemPathNodes)
+        public void CreateHierarchicalNode(SmartId id, string hierarchyNodeName, string[] sysPathNodes)
         {
             VueHierarchyItem suggestParentNode = Root;
             var item = new VueHierarchyItem
             {
                 Ident = id,
-                Name = hierarchyNode,
+                Name = hierarchyNodeName,
                 Type = HierarchyItemType.ELEMENT
             };
 
-            if (systemPathNodes.Length != 0)
+            if (sysPathNodes.Length != 0)
             {
-                foreach (string pathNode in systemPathNodes)
+                foreach (string sysPathNode in sysPathNodes)
                 {
-                    IEnumerable<VueHierarchyItem> existsParents = suggestParentNode.Items.Where(child => child.Name == pathNode);
+                    IEnumerable<VueHierarchyItem> existsParents = suggestParentNode.Items.Where(child => child.Name == sysPathNode);
                     
                     if (!existsParents.Any())
                     {
                         var newFolderNode = new VueHierarchyItem
                         {
                             Ident = new SmartId(),
-                            Name = pathNode,
+                            Name = sysPathNode,
                             Type = HierarchyItemType.FOLDER
                         };
                         suggestParentNode.Items.Add(newFolderNode);
@@ -49,13 +49,17 @@ namespace IFConvertable.SP3DFileReader
 
                         if (existsParents.Count() > 1)
                         {
-                            Log.Warning($"Found more than one elements by name '{pathNode}' to suggest it as parent");
+                            Log.Warning($"Found more than one elements by name '{sysPathNode}' to suggest it as parent. Observable node: '{suggestParentNode.Name}'.");
                         }
                     }
                 }
-            }
 
-            suggestParentNode.Items.Add(item);
+                suggestParentNode.Items.Add(item);
+            }
+            else
+            {
+                Undefinded.Items.Add(item);
+            }
         }
 
         public string SerializeToJson()

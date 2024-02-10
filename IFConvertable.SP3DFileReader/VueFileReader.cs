@@ -112,7 +112,7 @@ namespace IFConvertable.SP3DFileReader
 
                 SmartId smartId = ParseMoniker(moniker);
 
-                hierarchy.Insert(smartId, name ?? "NO_NAME", systemPath != null ? systemPath.Split('\\') : Array.Empty<string>());
+                hierarchy.CreateHierarchicalNode(smartId, name ?? "undefinded", systemPath != null ? systemPath.Split('\\') : Array.Empty<string>());
             }
 
             _Reader.CloseVueFile();
@@ -140,7 +140,7 @@ namespace IFConvertable.SP3DFileReader
             };
         }
 
-        private Dictionary<string, string> ParseAttributes(Array attributes)
+        private static Dictionary<string, string> ParseAttributes(Array attributes)
         {
             return new Dictionary<string, string>(attributes
                 .Cast<string>().Select(x =>
@@ -151,7 +151,7 @@ namespace IFConvertable.SP3DFileReader
                 .GroupBy(x => x.Key).Select(x => x.First()));
         }
 
-        private SmartId ParseMoniker(string moniker)
+        private static SmartId ParseMoniker(string moniker)
         {
             return new SmartId
             {
